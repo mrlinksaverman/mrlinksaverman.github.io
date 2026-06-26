@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mrlinksaverman</title>
+    <!-- Include Supabase Library via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -43,7 +44,7 @@
             overflow-y: auto; 
         }
 
-        h1, h2 {
+        h1, h2, h3 {
             color: var(--matrix-green);
             text-align: center;
             text-transform: uppercase;
@@ -193,6 +194,23 @@
             margin-bottom: 8px;
         }
 
+        .admin-sub-section {
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #0a0a0a;
+        }
+
+        .admin-sub-card {
+            background: #111;
+            border: 1px solid #222;
+            padding: 8px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .error { color: #ff3333; text-align: center; font-size: 0.9em; }
         .success { color: #00ff41; text-align: center; font-size: 0.9em; }
     </style>
@@ -200,6 +218,7 @@
 <body>
 
 <div class="container">
+    <!-- LOGIN SCREEN -->
     <div id="login-screen">
         <h1>// mrlinksaverman</h1>
         <input type="text" id="username" placeholder="ENTER USERNAME">
@@ -208,6 +227,7 @@
         <p id="login-error" class="error"></p>
     </div>
 
+    <!-- DASHBOARD -->
     <div id="dashboard">
         <div class="user-header">
             <div class="user-info">
@@ -234,6 +254,7 @@
             <button id="admin-tab-btn" class="tab-btn" onclick="switchTab('admin')" style="display:none; background:#800000; color:#fff;">⚠️ ADMIN CONTROL</button>
         </div>
 
+        <!-- NOTES TAB -->
         <div id="notes" class="tab-content active">
             <div class="input-group">
                 <textarea id="note-text" placeholder="Type cloud note here..." rows="3"></textarea>
@@ -242,6 +263,7 @@
             <div id="notes-list">SYNCING...</div>
         </div>
 
+        <!-- MEETINGS TAB -->
         <div id="meetings" class="tab-content">
             <div class="input-group">
                 <input type="text" id="meet-title" placeholder="Meeting Title">
@@ -251,6 +273,7 @@
             <div id="meetings-list">SYNCING...</div>
         </div>
 
+        <!-- ASSIGNMENTS TAB -->
         <div id="assignments" class="tab-content">
             <div class="input-group">
                 <input type="text" id="assign-title" placeholder="Assignment Title">
@@ -269,16 +292,31 @@
             <div id="assignments-list">SYNCING...</div>
         </div>
 
+        <!-- ADMIN EXCLUSIVE TAB -->
         <div id="admin" class="tab-content">
             <h2>System User Management</h2>
             <div class="input-group" style="border-color:#ff3333;">
-                <span style="color:#ff3333; font-weight:bold;">[+] CREATING NEW TERMINAL ACCESS USER</span>
-                <input type="text" id="admin-new-user" placeholder="Enter New Username">
-                <input type="password" id="admin-new-pass" placeholder="Enter Account Password">
-                <button onclick="adminAddUser()" style="background:#550000; border-color:#ff3333;">PROVISION ACCESS KEY</button>
+                <span style="color:#ff3333; font-weight:bold;">[+] MANUALLY PROVISION TERMINAL ACCOUNT</span>
+                <input type="text" id="admin-new-user" placeholder="Enter Username">
+                <input type="password" id="admin-new-pass" placeholder="Enter Password">
+                <button onclick="adminAddUser()" style="background:#550000; border-color:#ff3333;">GRANT SERVICE ACCESS</button>
                 <p id="admin-msg"></p>
             </div>
-            <h3>Active Core Accounts</h3>
+
+            <!-- SEARCH SYSTEM -->
+            <div style="margin: 15px 0; display:flex; flex-direction:column; gap:5px;">
+                <label style="font-size:0.8em; color:#ffff00;">🔍 FILTER LEDGER BY USERNAME:</label>
+                <input type="text" id="admin-search-box" oninput="filterAdminLedger()" placeholder="Type username to parse logs...">
+            </div>
+
+            <!-- CHRONO SEGREGATED SUBSCRIPTION LISTS -->
+            <h3 style="color:#00ff41; text-align:left; font-size:0.9em; border-bottom:1px solid #00ff41; margin-top:20px;">[🟢] ACTIVE USERS (TIMER RUNNING)</h3>
+            <div id="active-subs-container" class="admin-sub-section">Pulling ledger logs...</div>
+
+            <h3 style="color:#ff3333; text-align:left; font-size:0.9em; border-bottom:1px solid #ff3333; margin-top:20px;">[🔴] EXPIRED USERS (TIMER ENDED)</h3>
+            <div id="expired-subs-container" class="admin-sub-section">Pulling ledger logs...</div>
+
+            <h3 style="margin-top:25px; font-size:0.9em; text-align:left;">Core Terminal Accounts</h3>
             <div id="admin-users-list">Pulling terminal logs...</div>
         </div>
     </div>
@@ -291,13 +329,36 @@
         window.supabase = supabase.createClient(URL, KEY);
     })();
 
-    let currentUserRecord = null; // Stores full db user row
+    let currentUserRecord = null; 
     let cloudItems = [];
+    let globalCachedUsers = []; // Stores admin lists to allow searching
+
+    // Helper to evaluate the invisible timer window
+    function checkIsExpired(userRow) {
+        if (userRow.is_original_admin || userRow.is_lifetime_free) return false;
+        
+        // Dynamic Case for the Tester Simulation Account
+        if (userRow.username.toLowerCase() === 'tester2') return true;
+
+        if (!userRow.activated_at) return true;
+
+        const activationDate = new Date(userRow.activated_at);
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - 60); // 60 days structural limit
+
+        return activationDate < cutoffDate;
+    }
 
     // --- LOGIN ENGINE ---
     async function login() {
         const user = document.getElementById('username').value.trim();
         const pass = document.getElementById('password').value.trim();
+        document.getElementById('login-error').innerText = "";
+
+        // Fallback catch to automatically provision tester2 if it doesn't exist
+        if(user.toLowerCase() === 'tester2' && pass === 'tester2') {
+            await window.supabase.from('system_users').insert([{ username: 'tester2', password: 'tester2' }]).input;
+        }
 
         const { data, error } = await window.supabase
             .from('system_users')
@@ -306,12 +367,18 @@
             .single();
 
         if (!error && data && data.password === pass) {
+            
+            // Evaluate dynamic active/inactive status conditions
+            if (checkIsExpired(data)) {
+                document.getElementById('login-error').innerText = "your 2 months have finished, please contact admin to activate it again";
+                return;
+            }
+
             currentUserRecord = data;
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
             document.getElementById('current-user').innerText = data.username.toUpperCase();
             
-            // Rule #5 & #6: Check if user profile is the designated master account
             if (data.is_original_admin === true) {
                 document.getElementById('admin-tab-btn').style.display = 'inline-block';
             } else {
@@ -322,9 +389,12 @@
             document.getElementById('new-password').value = data.password;
             
             fetchData(); 
-            if(data.is_original_admin) fetchAdminUsers();
+            if(data.is_original_admin) {
+                fetchAdminUsers();
+                fetchSubscriptionLedger();
+            }
         } else {
-            document.getElementById('login-error').innerText = "ACCESS ACCESS DENIED: REJECTED CREDENTIALS.";
+            document.getElementById('login-error').innerText = "ACCESS DENIED: REJECTED CREDENTIALS.";
         }
     }
 
@@ -335,7 +405,85 @@
         document.getElementById('settings-panel').style.display = 'none';
     }
 
-    // --- EDIT & PROFILE MANAGEMENT ---
+    // --- ADMIN SYSTEM ARCHITECTURE ---
+    async function fetchSubscriptionLedger() {
+        const { data, error } = await window.supabase.from('system_users').select('*').order('username', { ascending: true });
+        if(!error) {
+            globalCachedUsers = data;
+            renderAdminLedger(data);
+        }
+    }
+
+    function filterAdminLedger() {
+        const query = document.getElementById('admin-search-box').value.toLowerCase().trim();
+        if(query === "") {
+            renderAdminLedger(globalCachedUsers);
+        } else {
+            const filtered = globalCachedUsers.filter(u => u.username.toLowerCase().includes(query));
+            renderAdminLedger(filtered);
+        }
+    }
+
+    function renderAdminLedger(userArray) {
+        const activeContainer = document.getElementById('active-subs-container');
+        const expiredContainer = document.getElementById('expired-subs-container');
+        
+        activeContainer.innerHTML = '';
+        expiredContainer.innerHTML = '';
+
+        userArray.forEach(u => {
+            if(u.is_original_admin) return; // Master Admin bypasses logs
+
+            const expired = checkIsExpired(u);
+            const cardHtml = `
+                <div class="admin-sub-card">
+                    <div>
+                        <strong style="color:white;">${u.username.toUpperCase()}</strong>
+                        ${u.is_lifetime_free ? ' <span style="color:#ffff00; font-size:0.75em;">[FREE FOREVER]</span>' : ''}<br>
+                        <span style="font-size:0.75em; color:gray;">Last Activated: ${new Date(u.activated_at).toLocaleDateString()}</span>
+                    </div>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="toggleLifetimeFree(${u.id}, ${u.is_lifetime_free})" style="font-size:0.75em; padding:4px; background:#111; border-color:#ffff00; color:#ffff00;">
+                            ${u.is_lifetime_free ? 'MAKE PAID' : 'FREE FOREVER'}
+                        </button>
+                        <button onclick="reactivateUserTimer(${u.id})" style="font-size:0.75em; padding:4px 8px; background:var(--dark-green); color:var(--matrix-green);">
+                            RE-ACTIVATE (RESET 2MO)
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            if (expired) {
+                expiredContainer.innerHTML += cardHtml;
+            } else {
+                activeContainer.innerHTML += cardHtml;
+            }
+        });
+
+        if(activeContainer.innerHTML === "") activeContainer.innerHTML = '<span style="color:gray; font-size:0.8em;">No active accounts within timer windows.</span>';
+        if(expiredContainer.innerHTML === "") expiredContainer.innerHTML = '<span style="color:gray; font-size:0.8em;">No expired accounts found.</span>';
+    }
+
+    async function reactivateUserTimer(id) {
+        // Reset the timer cleanly to current timestamp, establishing a fresh 2-month matrix loop
+        await window.supabase
+            .from('system_users')
+            .update({ activated_at: new Date().toISOString() })
+            .eq('id', id);
+        
+        fetchSubscriptionLedger();
+    }
+
+    async function toggleLifetimeFree(id, currentStatus) {
+        await window.supabase
+            .from('system_users')
+            .update({ is_lifetime_free: !currentStatus })
+            .eq('id', id);
+
+        fetchSubscriptionLedger();
+    }
+
+    // --- PROFILE USER DATA ---
     function toggleSettings() {
         const panel = document.getElementById('settings-panel');
         panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
@@ -354,19 +502,16 @@
             .eq('id', currentUserRecord.id);
 
         if(!error) {
-            msg.className = "success";
-            msg.innerText = "Credentials synchronized successfully!";
-            currentUserRecord.username = newU;
-            currentUserRecord.password = newP;
+            msg.className = "success"; msg.innerText = "Credentials synchronized successfully!";
+            currentUserRecord.username = newU; currentUserRecord.password = newP;
             document.getElementById('current-user').innerText = newU.toUpperCase();
             fetchData();
         } else {
-            msg.className = "error";
-            msg.innerText = "Error: Username might be taken.";
+            msg.className = "error"; msg.innerText = "Error: Username might be taken.";
         }
     }
 
-    // --- MULTIPLE LINKS LOGIC ---
+    // --- MULTIPLE ATTACHMENTS LINK LOGIC ---
     function addLinkField() {
         const container = document.getElementById('assignment-links-entry');
         const input = document.createElement('input');
@@ -376,7 +521,7 @@
         container.appendChild(input);
     }
 
-    // --- DATABASE OPERATIONS ---
+    // --- LINK_SAVER DATA TRANSACTIONS ---
     async function fetchData() {
         const { data, error } = await window.supabase
             .from('link_saver')
@@ -412,7 +557,6 @@
             const title = document.getElementById('assign-title').value.trim();
             const notes = document.getElementById('assign-instruction').value.trim();
             
-            // Gather multiple links from input elements
             let links = [];
             document.querySelectorAll('.assign-link-input').forEach(input => {
                 if(input.value.trim() !== '') links.push(input.value.trim());
@@ -432,7 +576,6 @@
         if (!error) fetchData(); 
     }
 
-    // Update individual values inside database card
     async function saveEdit(id, category) {
         let updates = {};
         if (category === 'notes') {
@@ -460,7 +603,7 @@
         if (!error) fetchData();
     }
 
-    // --- EXCLUSIVE ADMIN PANEL CONTROLS ---
+    // --- TERMINAL MANAGEMENT Lifecycles ---
     async function fetchAdminUsers() {
         const { data, error } = await window.supabase.from('system_users').select('*').order('id', { ascending: true });
         if(!error) {
@@ -484,14 +627,15 @@
 
         if(!u || !p) return;
 
-        const { error } = await window.supabase.from('system_users').insert([{ username: u, password: p }]);
+        const { error } = await window.supabase.from('system_users').insert([{ username: u, password: p, activated_at: new Date().toISOString() }]);
         if(!error) {
-            msg.className = "success"; msg.innerText = "User account provisioned!";
+            msg.className = "success"; msg.innerText = "User terminal verified & active!";
             document.getElementById('admin-new-user').value = '';
             document.getElementById('admin-new-pass').value = '';
             fetchAdminUsers();
+            fetchSubscriptionLedger();
         } else {
-            msg.className = "error"; msg.innerText = "Failed: Username conflict.";
+            msg.className = "error"; msg.innerText = "Failed: Terminal key conflict.";
         }
     }
 
@@ -499,10 +643,11 @@
         if(confirm("Permanently revoke access for this user terminal?")) {
             await window.supabase.from('system_users').delete().eq('id', id);
             fetchAdminUsers();
+            fetchSubscriptionLedger();
         }
     }
 
-    // --- UI ENGINE ---
+    // --- RENDER CLOUD UI DISPLAY ENGINE ---
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -608,4 +753,4 @@
     }
 </script>
 </body>
-</html>  
+</html>
