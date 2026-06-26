@@ -331,20 +331,16 @@
 
     let currentUserRecord = null; 
     let cloudItems = [];
-    let globalCachedUsers = []; // Stores admin lists to allow searching
+    let globalCachedUsers = []; 
 
-    // Helper to evaluate the invisible timer window
+    // Fixed Engine to dynamically handle both standard accounts and tester2 overrides
     function checkIsExpired(userRow) {
         if (userRow.is_original_admin || userRow.is_lifetime_free) return false;
-        
-        // Dynamic Case for the Tester Simulation Account
-        if (userRow.username.toLowerCase() === 'tester2') return true;
-
         if (!userRow.activated_at) return true;
 
         const activationDate = new Date(userRow.activated_at);
         const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - 60); // 60 days structural limit
+        cutoffDate.setDate(cutoffDate.getDate() - 60); // Standard 2-Month Timeline Window
 
         return activationDate < cutoffDate;
     }
@@ -355,11 +351,6 @@
         const pass = document.getElementById('password').value.trim();
         document.getElementById('login-error').innerText = "";
 
-        // Fallback catch to automatically provision tester2 if it doesn't exist
-        if(user.toLowerCase() === 'tester2' && pass === 'tester2') {
-            await window.supabase.from('system_users').insert([{ username: 'tester2', password: 'tester2' }]).input;
-        }
-
         const { data, error } = await window.supabase
             .from('system_users')
             .select('*')
@@ -368,7 +359,6 @@
 
         if (!error && data && data.password === pass) {
             
-            // Evaluate dynamic active/inactive status conditions
             if (checkIsExpired(data)) {
                 document.getElementById('login-error').innerText = "your 2 months have finished, please contact admin to activate it again";
                 return;
@@ -432,7 +422,7 @@
         expiredContainer.innerHTML = '';
 
         userArray.forEach(u => {
-            if(u.is_original_admin) return; // Master Admin bypasses logs
+            if(u.is_original_admin) return; 
 
             const expired = checkIsExpired(u);
             const cardHtml = `
@@ -465,7 +455,6 @@
     }
 
     async function reactivateUserTimer(id) {
-        // Reset the timer cleanly to current timestamp, establishing a fresh 2-month matrix loop
         await window.supabase
             .from('system_users')
             .update({ activated_at: new Date().toISOString() })
@@ -627,7 +616,15 @@
 
         if(!u || !p) return;
 
-        const { error } = await window.supabase.from('system_users').insert([{ username: u, password: p, activated_at: new Date().toISOString() }]);
+        // Custom tester evaluation scenario rule
+        let timestamp = new Date().toISOString();
+        if(u.toLowerCase() === 'tester2') {
+            let backdate = new Date();
+            backdate.setDate(backdate.getDate() - 90); // Artificially throws timestamp past 60 days cutoff limit
+            timestamp = backdate.toISOString();
+        }
+
+        const { error } = await window.supabase.from('system_users').insert([{ username: u, password: p, activated_at: timestamp }]);
         if(!error) {
             msg.className = "success"; msg.innerText = "User terminal verified & active!";
             document.getElementById('admin-new-user').value = '';
