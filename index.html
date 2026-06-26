@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MrLinkSaverManEvil</title>
+    <title>mrlinksaverman</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -14,7 +14,6 @@
             --border-style: 1px solid #00ff41;
         }
 
-        /* CENTERED BOX LAYOUT */
         html, body {
             height: 100%;
             margin: 0;
@@ -34,25 +33,14 @@
 
         .container {
             width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
+            max-width: 650px;
+            max-height: 95vh;
             border: var(--border-style);
             padding: 20px;
             box-shadow: 0 0 15px var(--dark-green);
             background-color: #050505;
             box-sizing: border-box;
             overflow-y: auto; 
-        }
-
-        .container::-webkit-scrollbar {
-            width: 6px;
-        }
-        .container::-webkit-scrollbar-track {
-            background: #000;
-        }
-        .container::-webkit-scrollbar-thumb {
-            background: var(--dark-green);
-            border: 1px solid var(--matrix-green);
         }
 
         h1, h2 {
@@ -102,23 +90,38 @@
             display: none;
         }
 
+        .user-header {
+            border-bottom: var(--border-style);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
         .user-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: var(--border-style);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+        }
+
+        .settings-panel {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px dashed #ffff00;
+            background: #111;
         }
 
         .tabs {
             display: flex;
             gap: 5px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
             flex: 1;
+            min-width: 100px;
         }
 
         .tab-btn.active {
@@ -141,6 +144,12 @@
             margin-bottom: 20px;
             padding: 10px;
             border: 1px dashed var(--matrix-green);
+        }
+
+        .dynamic-links-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         .card {
@@ -172,28 +181,27 @@
             text-decoration: none;
         }
 
-        .card-body a:hover {
-            text-decoration: underline;
-        }
-
         .actions {
             margin-top: 10px;
             display: flex;
             gap: 10px;
         }
 
-        .error {
-            color: #ff3333;
-            text-align: center;
-            font-size: 0.9em;
+        .edit-mode input, .edit-mode textarea {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 8px;
         }
+
+        .error { color: #ff3333; text-align: center; font-size: 0.9em; }
+        .success { color: #00ff41; text-align: center; font-size: 0.9em; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="login-screen">
-        <h1>// MrLinkSaverManEvil</h1>
+        <h1>// mrlinksaverman</h1>
         <input type="text" id="username" placeholder="ENTER USERNAME">
         <input type="password" id="password" placeholder="ENTER PASSWORD">
         <button onclick="login()">INITIALIZE CLOUD LOGIN</button>
@@ -201,15 +209,29 @@
     </div>
 
     <div id="dashboard">
-        <div class="user-info">
-            <span>USER: <span id="current-user" style="color:var(--matrix-green)"></span></span>
-            <button onclick="logout()" style="padding: 2px 10px; font-size: 0.8em;">LOGOUT</button>
+        <div class="user-header">
+            <div class="user-info">
+                <span>USER: <span id="current-user" style="color:var(--matrix-green)"></span></span>
+                <div>
+                    <button onclick="toggleSettings()" style="padding: 2px 10px; font-size: 0.8em; background:#333;">⚙️ ACCOUNT SETTINGS</button>
+                    <button onclick="logout()" style="padding: 2px 10px; font-size: 0.8em;">LOGOUT</button>
+                </div>
+            </div>
+            
+            <div id="settings-panel" class="settings-panel">
+                <span style="color:#ffff00; font-size:0.8em;">// CHANGE PROFILE DATA</span>
+                <input type="text" id="new-username" placeholder="New Username">
+                <input type="password" id="new-password" placeholder="New Password">
+                <button onclick="updateAccountInfo()" style="background:#440044; color:#ff00ff; border-color:#ff00ff;">SAVE ACCOUNT UPDATES</button>
+                <p id="settings-msg"></p>
+            </div>
         </div>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('notes')">NOTES</button>
-            <button class="tab-btn" onclick="switchTab('meetings')">MEETINGS</button>
-            <button class="tab-btn" onclick="switchTab('assignments')">ASSIGNMENTS</button>
+            <button id="tab-btn-notes" class="tab-btn active" onclick="switchTab('notes')">NOTES</button>
+            <button id="tab-btn-meetings" class="tab-btn" onclick="switchTab('meetings')">MEETINGS</button>
+            <button id="tab-btn-assignments" class="tab-btn" onclick="switchTab('assignments')">ASSIGNMENTS</button>
+            <button id="admin-tab-btn" class="tab-btn" onclick="switchTab('admin')" style="display:none; background:#800000; color:#fff;">⚠️ ADMIN CONTROL</button>
         </div>
 
         <div id="notes" class="tab-content active">
@@ -232,50 +254,126 @@
         <div id="assignments" class="tab-content">
             <div class="input-group">
                 <input type="text" id="assign-title" placeholder="Assignment Title">
-                <input type="text" id="assign-link" placeholder="Paste Link Here">
                 <textarea id="assign-instruction" placeholder="Instructions/Notes..." rows="2"></textarea>
-                <button onclick="addItem('assignments')">SAVE TO CLOUD</button>
+                
+                <div style="margin-top:5px;">
+                    <label style="font-size:0.8em; color:var(--matrix-green);">ATTACHMENT LINKS:</label>
+                    <div id="assignment-links-entry" class="dynamic-links-list">
+                        <input type="text" class="assign-link-input" placeholder="Paste Link #1">
+                    </div>
+                    <button onclick="addLinkField()" type="button" style="padding:2px 8px; font-size:0.75em; margin-top:5px; background:#222;">+ ADD ANOTHER LINK</button>
+                </div>
+                
+                <button onclick="addItem('assignments')" style="margin-top:10px;">SAVE TO CLOUD</button>
             </div>
             <div id="assignments-list">SYNCING...</div>
+        </div>
+
+        <div id="admin" class="tab-content">
+            <h2>System User Management</h2>
+            <div class="input-group" style="border-color:#ff3333;">
+                <span style="color:#ff3333; font-weight:bold;">[+] CREATING NEW TERMINAL ACCESS USER</span>
+                <input type="text" id="admin-new-user" placeholder="Enter New Username">
+                <input type="password" id="admin-new-pass" placeholder="Enter Account Password">
+                <button onclick="adminAddUser()" style="background:#550000; border-color:#ff3333;">PROVISION ACCESS KEY</button>
+                <p id="admin-msg"></p>
+            </div>
+            <h3>Active Core Accounts</h3>
+            <div id="admin-users-list">Pulling terminal logs...</div>
         </div>
     </div>
 </div>
 
 <script>
     (function() {
-        // Safe Key Configuration Using Your Fresh Keys
         const URL = "https://rivjymdnsxgpdilqqpvu.supabase.co";
         const KEY = "sb_publishable_kY3--vsG69shv2nt6bS3Xw_WhfPWcfN";
-
-        // Initialize Supabase Client
         window.supabase = supabase.createClient(URL, KEY);
     })();
 
-    const credentials = { 'user1': 'admin', 'user2': 'admin2' };
-    let currentUser = '';
+    let currentUserRecord = null; // Stores full db user row
     let cloudItems = [];
 
-    // --- LOGIN ---
-    function login() {
+    // --- LOGIN ENGINE ---
+    async function login() {
         const user = document.getElementById('username').value.trim();
         const pass = document.getElementById('password').value.trim();
 
-        if (credentials[user] && credentials[user] === pass) {
-            currentUser = user;
+        const { data, error } = await window.supabase
+            .from('system_users')
+            .select('*')
+            .eq('username', user)
+            .single();
+
+        if (!error && data && data.password === pass) {
+            currentUserRecord = data;
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('current-user').innerText = user.toUpperCase();
+            document.getElementById('current-user').innerText = data.username.toUpperCase();
+            
+            // Rule #5 & #6: Check if user profile is the designated master account
+            if (data.is_original_admin === true) {
+                document.getElementById('admin-tab-btn').style.display = 'inline-block';
+            } else {
+                document.getElementById('admin-tab-btn').style.display = 'none';
+            }
+
+            document.getElementById('new-username').value = data.username;
+            document.getElementById('new-password').value = data.password;
             
             fetchData(); 
+            if(data.is_original_admin) fetchAdminUsers();
         } else {
-            document.getElementById('login-error').innerText = "INVALID CREDENTIALS.";
+            document.getElementById('login-error').innerText = "ACCESS ACCESS DENIED: REJECTED CREDENTIALS.";
         }
     }
 
     function logout() {
-        currentUser = '';
+        currentUserRecord = null;
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('login-screen').style.display = 'flex';
+        document.getElementById('settings-panel').style.display = 'none';
+    }
+
+    // --- EDIT & PROFILE MANAGEMENT ---
+    function toggleSettings() {
+        const panel = document.getElementById('settings-panel');
+        panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    async function updateAccountInfo() {
+        const newU = document.getElementById('new-username').value.trim();
+        const newP = document.getElementById('new-password').value.trim();
+        const msg = document.getElementById('settings-msg');
+
+        if(!newU || !newP) return;
+
+        const { error } = await window.supabase
+            .from('system_users')
+            .update({ username: newU, password: newP })
+            .eq('id', currentUserRecord.id);
+
+        if(!error) {
+            msg.className = "success";
+            msg.innerText = "Credentials synchronized successfully!";
+            currentUserRecord.username = newU;
+            currentUserRecord.password = newP;
+            document.getElementById('current-user').innerText = newU.toUpperCase();
+            fetchData();
+        } else {
+            msg.className = "error";
+            msg.innerText = "Error: Username might be taken.";
+        }
+    }
+
+    // --- MULTIPLE LINKS LOGIC ---
+    function addLinkField() {
+        const container = document.getElementById('assignment-links-entry');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'assign-link-input';
+        input.placeholder = `Paste Link #${container.children.length + 1}`;
+        container.appendChild(input);
     }
 
     // --- DATABASE OPERATIONS ---
@@ -283,19 +381,17 @@
         const { data, error } = await window.supabase
             .from('link_saver')
             .select('*')
-            .eq('username', currentUser)
+            .eq('username', currentUserRecord.username)
             .order('created_at', { ascending: false });
 
         if (!error) {
             cloudItems = data;
             renderAll();
-        } else {
-            console.error("Error pulling database items:", error);
         }
     }
 
     async function addItem(category) {
-        let payload = { username: currentUser, category: category };
+        let payload = { username: currentUserRecord.username, category: category };
 
         if (category === 'notes') {
             const txt = document.getElementById('note-text').value.trim();
@@ -314,19 +410,49 @@
         } 
         else if (category === 'assignments') {
             const title = document.getElementById('assign-title').value.trim();
-            const link = document.getElementById('assign-link').value.trim();
             const notes = document.getElementById('assign-instruction').value.trim();
-            if(!title || !link) return;
+            
+            // Gather multiple links from input elements
+            let links = [];
+            document.querySelectorAll('.assign-link-input').forEach(input => {
+                if(input.value.trim() !== '') links.push(input.value.trim());
+            });
+
+            if(!title) return;
             payload.title = title;
-            payload.link = link;
             payload.notes = notes;
+            payload.multi_links = links;
+
             document.getElementById('assign-title').value = '';
-            document.getElementById('assign-link').value = '';
             document.getElementById('assign-instruction').value = '';
+            document.getElementById('assignment-links-entry').innerHTML = '<input type="text" class="assign-link-input" placeholder="Paste Link #1">';
         }
 
         const { error } = await window.supabase.from('link_saver').insert([payload]);
         if (!error) fetchData(); 
+    }
+
+    // Update individual values inside database card
+    async function saveEdit(id, category) {
+        let updates = {};
+        if (category === 'notes') {
+            updates.notes = document.getElementById(`edit-notes-${id}`).value;
+        } else if (category === 'meetings') {
+            updates.title = document.getElementById(`edit-title-${id}`).value;
+            updates.link = document.getElementById(`edit-link-${id}`).value;
+        } else if (category === 'assignments') {
+            updates.title = document.getElementById(`edit-title-${id}`).value;
+            updates.notes = document.getElementById(`edit-notes-${id}`).value;
+            
+            let links = [];
+            document.querySelectorAll(`.edit-multi-${id}`).forEach(inp => {
+                if(inp.value.trim() !== '') links.push(inp.value.trim());
+            });
+            updates.multi_links = links;
+        }
+
+        const { error } = await window.supabase.from('link_saver').update(updates).eq('id', id);
+        if(!error) fetchData();
     }
 
     async function deleteItem(id) {
@@ -334,19 +460,65 @@
         if (!error) fetchData();
     }
 
-    // --- UI DISPLAY ENGINE ---
+    // --- EXCLUSIVE ADMIN PANEL CONTROLS ---
+    async function fetchAdminUsers() {
+        const { data, error } = await window.supabase.from('system_users').select('*').order('id', { ascending: true });
+        if(!error) {
+            const listDiv = document.getElementById('admin-users-list');
+            listDiv.innerHTML = '';
+            data.forEach(u => {
+                listDiv.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #333;">
+                        <span>👤 ${u.username} ${u.is_original_admin ? '<span style="color:cyan">[MASTER]</span>' : ''}</span>
+                        ${u.is_original_admin ? '' : `<button onclick="adminDeleteUser(${u.id})" style="background:#cc0000; color:#000; padding:2px 8px; font-size:0.8em;">REVOKE</button>`}
+                    </div>
+                `;
+            });
+        }
+    }
+
+    async function adminAddUser() {
+        const u = document.getElementById('admin-new-user').value.trim();
+        const p = document.getElementById('admin-new-pass').value.trim();
+        const msg = document.getElementById('admin-msg');
+
+        if(!u || !p) return;
+
+        const { error } = await window.supabase.from('system_users').insert([{ username: u, password: p }]);
+        if(!error) {
+            msg.className = "success"; msg.innerText = "User account provisioned!";
+            document.getElementById('admin-new-user').value = '';
+            document.getElementById('admin-new-pass').value = '';
+            fetchAdminUsers();
+        } else {
+            msg.className = "error"; msg.innerText = "Failed: Username conflict.";
+        }
+    }
+
+    async function adminDeleteUser(id) {
+        if(confirm("Permanently revoke access for this user terminal?")) {
+            await window.supabase.from('system_users').delete().eq('id', id);
+            fetchAdminUsers();
+        }
+    }
+
+    // --- UI ENGINE ---
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        
-        const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.innerText.toLowerCase() === tabId);
-        if (activeBtn) activeBtn.classList.add('active');
+        document.getElementById(`tab-btn-${tabId}`)?.classList.add('active');
+        if(tabId === 'admin') document.getElementById('admin-tab-btn').classList.add('active');
     }
 
     function toggleCard(id) {
         const body = document.getElementById(id);
         body.style.display = body.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function enableEditMode(id) {
+        document.getElementById(`display-container-${id}`).style.display = 'none';
+        document.getElementById(`edit-container-${id}`).style.display = 'block';
     }
 
     function renderAll() {
@@ -364,8 +536,17 @@
                             <span>📝 ${item.notes.substring(0, 25)}...</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
-                            <p style="white-space: pre-wrap;">${item.notes}</p>
-                            <div class="actions"><button onclick="deleteItem(${item.id})">DELETE</button></div>
+                            <div id="display-container-${item.id}">
+                                <p style="white-space: pre-wrap;">${item.notes}</p>
+                                <div class="actions">
+                                    <button onclick="enableEditMode(${item.id})">EDIT</button>
+                                    <button onclick="deleteItem(${item.id})">DELETE</button>
+                                </div>
+                            </div>
+                            <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
+                                <textarea id="edit-notes-${item.id}" rows="3">${item.notes}</textarea>
+                                <button onclick="saveEdit(${item.id}, 'notes')">SAVE</button>
+                            </div>
                         </div>
                     </div>`;
             } 
@@ -376,21 +557,50 @@
                             <span>📹 ${item.title}</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
-                            <p>Link: <a href="${item.link}" target="_blank">${item.link}</a></p>
-                            <div class="actions"><button onclick="deleteItem(${item.id})">DELETE</button></div>
+                            <div id="display-container-${item.id}">
+                                <p>Link: <a href="${item.link}" target="_blank">${item.link}</a></p>
+                                <div class="actions">
+                                    <button onclick="enableEditMode(${item.id})">EDIT</button>
+                                    <button onclick="deleteItem(${item.id})">DELETE</button>
+                                </div>
+                            </div>
+                            <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
+                                <input type="text" id="edit-title-${item.id}" value="${item.title}">
+                                <input type="text" id="edit-link-${item.id}" value="${item.link}">
+                                <button onclick="saveEdit(${item.id}, 'meetings')">SAVE</button>
+                            </div>
                         </div>
                     </div>`;
             } 
             else if (item.category === 'assignments') {
+                let linkArray = item.multi_links || [];
+                let linksHtml = linkArray.map(l => `<li><a href="${l}" target="_blank">${l}</a></li>`).join('');
+                let inputsHtml = linkArray.map(l => `<input type="text" class="edit-multi-${item.id}" value="${l}">`).join('');
+                if(inputsHtml === "") inputsHtml = `<input type="text" class="edit-multi-${item.id}" value="">`;
+
                 assignsList.innerHTML += `
                     <div class="card">
                         <div class="card-header" onclick="toggleCard('body-${item.id}')">
                             <span>📚 ${item.title}</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
-                            <p>Link: <a href="${item.link}" target="_blank">${item.link}</a></p>
-                            <p><strong>Task Note:</strong> ${item.notes || 'None'}</p>
-                            <div class="actions"><button onclick="deleteItem(${item.id})">DELETE</button></div>
+                            <div id="display-container-${item.id}">
+                                <p><strong>Instructions:</strong> ${item.notes || 'None'}</p>
+                                <p><strong>Resource Links:</strong></p>
+                                <ul>${linksHtml || '<li>No links uploaded</li>'}</ul>
+                                <div class="actions">
+                                    <button onclick="enableEditMode(${item.id})">EDIT</button>
+                                    <button onclick="deleteItem(${item.id})">DELETE</button>
+                                </div>
+                            </div>
+                            <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
+                                <input type="text" id="edit-title-${item.id}" value="${item.title}">
+                                <textarea id="edit-notes-${item.id}" rows="2">${item.notes}</textarea>
+                                <label style="font-size:0.8em; color:yellow;">Links:</label>
+                                ${inputsHtml}
+                                <input type="text" class="edit-multi-${item.id}" placeholder="Add extra new link...">
+                                <button onclick="saveEdit(${item.id}, 'assignments')" style="margin-top:5px;">SAVE CHANGES</button>
+                            </div>
                         </div>
                     </div>`;
             }
@@ -398,4 +608,4 @@
     }
 </script>
 </body>
-</html> 
+</html>  
