@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mrlinksaverman</title>
-    <!-- Include Supabase Library via CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -218,7 +217,6 @@
 <body>
 
 <div class="container">
-    <!-- LOGIN SCREEN -->
     <div id="login-screen">
         <h1>// mrlinksaverman</h1>
         <input type="text" id="username" placeholder="ENTER USERNAME">
@@ -227,7 +225,6 @@
         <p id="login-error" class="error"></p>
     </div>
 
-    <!-- DASHBOARD -->
     <div id="dashboard">
         <div class="user-header">
             <div class="user-info">
@@ -254,7 +251,6 @@
             <button id="admin-tab-btn" class="tab-btn" onclick="switchTab('admin')" style="display:none; background:#800000; color:#fff;">⚠️ ADMIN CONTROL</button>
         </div>
 
-        <!-- NOTES TAB -->
         <div id="notes" class="tab-content active">
             <div class="input-group">
                 <textarea id="note-text" placeholder="Type cloud note here..." rows="3"></textarea>
@@ -263,7 +259,6 @@
             <div id="notes-list">SYNCING...</div>
         </div>
 
-        <!-- MEETINGS TAB -->
         <div id="meetings" class="tab-content">
             <div class="input-group">
                 <input type="text" id="meet-title" placeholder="Meeting Title">
@@ -273,7 +268,6 @@
             <div id="meetings-list">SYNCING...</div>
         </div>
 
-        <!-- ASSIGNMENTS TAB -->
         <div id="assignments" class="tab-content">
             <div class="input-group">
                 <input type="text" id="assign-title" placeholder="Assignment Title">
@@ -292,7 +286,6 @@
             <div id="assignments-list">SYNCING...</div>
         </div>
 
-        <!-- ADMIN EXCLUSIVE TAB -->
         <div id="admin" class="tab-content">
             <h2>System User Management</h2>
             <div class="input-group" style="border-color:#ff3333;">
@@ -303,13 +296,11 @@
                 <p id="admin-msg"></p>
             </div>
 
-            <!-- SEARCH SYSTEM -->
             <div style="margin: 15px 0; display:flex; flex-direction:column; gap:5px;">
                 <label style="font-size:0.8em; color:#ffff00;">🔍 FILTER LEDGER BY USERNAME:</label>
                 <input type="text" id="admin-search-box" oninput="filterAdminLedger()" placeholder="Type username to parse logs...">
             </div>
 
-            <!-- CHRONO SEGREGATED SUBSCRIPTION LISTS -->
             <h3 style="color:#00ff41; text-align:left; font-size:0.9em; border-bottom:1px solid #00ff41; margin-top:20px;">[🟢] ACTIVE USERS (TIMER RUNNING)</h3>
             <div id="active-subs-container" class="admin-sub-section">Pulling ledger logs...</div>
 
@@ -471,12 +462,7 @@
         fetchSubscriptionLedger();
     }
 
-    // --- PROFILE USER DATA ---
-    function toggleSettings() {
-        const panel = document.getElementById('settings-panel');
-        panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
-    }
-
+    // --- PROFILE USER DATA (UPDATED WITH DATA MIGRATION SYNC) ---
     async function updateAccountInfo() {
         const newU = document.getElementById('new-username').value.trim();
         const newP = document.getElementById('new-password').value.trim();
@@ -484,15 +470,29 @@
 
         if(!newU || !newP) return;
 
-        const { error } = await window.supabase
+        const oldUsername = currentUserRecord.username;
+
+        // 1. Update the user login details profile row
+        const { error: userError } = await window.supabase
             .from('system_users')
             .update({ username: newU, password: newP })
             .eq('id', currentUserRecord.id);
 
-        if(!error) {
-            msg.className = "success"; msg.innerText = "Credentials synchronized successfully!";
-            currentUserRecord.username = newU; currentUserRecord.password = newP;
+        if(!userError) {
+            // 2. DATA MIGRATION SYNC - Migrate links to the new username structure immediately
+            await window.supabase
+                .from('link_saver')
+                .update({ username: newU })
+                .eq('username', oldUsername);
+
+            msg.className = "success"; msg.innerText = "Credentials and data synchronized successfully!";
+            
+            // 3. Update global layout states
+            currentUserRecord.username = newU; 
+            currentUserRecord.password = newP;
             document.getElementById('current-user').innerText = newU.toUpperCase();
+            
+            // 4. Reload page layout values smoothly
             fetchData();
         } else {
             msg.className = "error"; msg.innerText = "Error: Username might be taken.";
@@ -511,7 +511,6 @@
 
     // --- LINK_SAVER DATA TRANSACTIONS (SECURED VIA RPC) ---
     async function fetchData() {
-        // Calling the secure database function bypassing standard table level RLS roadblocks safely!
         const { data, error } = await window.supabase
             .rpc('secure_get_user_links', { target_username: currentUserRecord.username });
 
@@ -560,7 +559,6 @@
             document.getElementById('assignment-links-entry').innerHTML = '<input type="text" class="assign-link-input" placeholder="Paste Link #1">';
         }
 
-        // Table insertions remain simple because RLS doesn't block unconstrained writes
         const { error } = await window.supabase.from('link_saver').insert([payload]);
         if (!error) fetchData(); 
     }
@@ -749,4 +747,4 @@
     }
 </script>
 </body>
-</html> 
+</html>
