@@ -39,7 +39,7 @@
             --shadow-sm: 0 4px 15px rgba(0,0,0,0.4);
             --card-bg: #162f23;
         }
-        /* 2. Pinkish Modern (Brighter, Highly Vibrant Pink Base Layout) */
+        /* 2. Pinkish Modern (Bright Pink Base Layout) */
         [data-theme="blush"] {
             --bg-color: #ffb3c6;
             --surface-color: #ffe5ec;
@@ -52,7 +52,7 @@
         }
 
         html, body {
-            height: 100%;
+            min-height: 100%;
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
@@ -64,22 +64,23 @@
         body {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             box-sizing: border-box;
-            padding: 20px;
+            padding: 12px;
         }
 
         .container {
             width: 100%;
             max-width: 650px;
-            max-height: 95vh;
+            margin: 10px auto;
             border: var(--border-style);
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             box-shadow: var(--shadow-sm);
             background-color: var(--surface-color);
             box-sizing: border-box;
-            overflow-y: auto; 
+            word-wrap: break-word;
+            overflow-wrap: break-word;
             transition: background-color 0.3s, border 0.3s;
         }
 
@@ -95,7 +96,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            padding: 20px 0;
+            padding: 10px 0;
         }
 
         .theme-panel-wrapper {
@@ -105,6 +106,8 @@
             margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: var(--border-style);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .theme-label {
@@ -122,6 +125,7 @@
             font-family: inherit;
             font-size: 0.95em;
             box-sizing: border-box;
+            width: 100%;
             transition: all 0.2s;
         }
 
@@ -140,6 +144,8 @@
             cursor: pointer;
             font-family: inherit;
             font-weight: 600;
+            width: 100%;
+            box-sizing: border-box;
             transition: filter 0.2s, transform 0.1s;
         }
 
@@ -164,6 +170,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-info div {
+            display: flex;
+            gap: 6px;
+        }
+
+        .user-info button {
+            width: auto;
         }
 
         .settings-panel {
@@ -204,26 +221,30 @@
         }
 
         .tabs {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 6px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
         }
 
         .tab-btn {
-            flex: 1;
-            min-width: 90px;
             background-color: var(--card-bg);
             color: var(--text-sub);
             border: var(--border-style);
             padding: 10px;
             font-size: 0.85em;
+            width: 100%;
+            border-radius: 6px;
         }
 
         .tab-btn.active {
             background-color: var(--brand-accent);
             color: #ffffff;
             border-color: var(--brand-accent);
+        }
+
+        #admin-tab-btn {
+            grid-column: span 2;
         }
 
         .tab-content {
@@ -258,6 +279,8 @@
             margin-bottom: 12px;
             background: var(--surface-color);
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-sizing: border-box;
+            max-width: 100%;
         }
 
         .card-header {
@@ -267,6 +290,7 @@
             font-weight: 600;
             cursor: pointer;
             color: var(--text-main);
+            gap: 8px;
         }
 
         .card-body {
@@ -274,7 +298,8 @@
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px dashed var(--border-style);
-            word-break: break-all;
+            word-break: break-word;
+            overflow-wrap: break-word;
             color: var(--text-sub);
             font-size: 0.95em;
         }
@@ -282,6 +307,7 @@
         .card-body a {
             color: var(--brand-accent);
             text-decoration: underline;
+            word-break: break-all;
         }
 
         .actions {
@@ -291,8 +317,9 @@
         }
 
         .actions button {
-            padding: 6px 12px;
+            padding: 8px 12px;
             font-size: 0.85em;
+            width: auto;
         }
 
         .btn-delete {
@@ -300,8 +327,6 @@
         }
 
         .edit-mode input, .edit-mode textarea {
-            width: 100%;
-            box-sizing: border-box;
             margin-bottom: 8px;
         }
 
@@ -309,7 +334,9 @@
             background: var(--card-bg);
             border: var(--border-style);
             border-radius: 12px;
-            padding: 16px;
+            padding: 12px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .calendar-header-nav {
@@ -317,17 +344,23 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
+            gap: 6px;
+        }
+
+        .calendar-header-nav button {
+            width: auto;
+            padding: 6px 12px;
         }
 
         .calendar-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 4px;
             text-align: center;
         }
 
         .calendar-weekday {
-            font-size: 0.75em;
+            font-size: 0.7em;
             font-weight: 700;
             color: var(--text-sub);
             padding-bottom: 4px;
@@ -342,9 +375,11 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 4px;
-            font-size: 0.8em;
+            font-size: 0.75em;
             cursor: pointer;
             position: relative;
+            box-sizing: border-box;
+            min-width: 0;
             transition: all 0.2s;
         }
 
@@ -363,12 +398,12 @@
         }
 
         .calendar-cell .events-indicator {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
             background-color: var(--brand-accent);
             border-radius: 50%;
             align-self: center;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .calendar-details-box {
@@ -396,10 +431,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .admin-sub-card div {
+            min-width: 140px;
         }
 
         .error { color: #ef4444; text-align: center; font-size: 0.9em; font-weight: 600; }
         .success { color: #10b981; text-align: center; font-size: 0.9em; font-weight: 600; }
+
+        /* Mobile specific balance adjustments */
+        @media (max-width: 480px) {
+            body { padding: 6px; }
+            .container { padding: 14px; border-radius: 12px; }
+            .widgets-container { grid-template-columns: 1fr; gap: 8px; }
+            .tabs { grid-template-columns: repeat(2, 1fr); }
+            .actions { flex-direction: column; gap: 6px; }
+            .actions button { width: 100%; }
+            .calendar-weekday { font-size: 0.6em; }
+        }
     </style>
 </head>
 <body>
@@ -407,11 +459,11 @@
 <div class="container">
     <div class="theme-panel-wrapper">
         <span class="theme-label">VISUAL CONFIGURATION:</span>
-        <select id="global-theme-switcher" onchange="applySelectedTheme()" style="padding: 6px 12px; margin: 0; font-size: 0.85em;">
+        <select id="global-theme-switcher" onchange="applySelectedTheme()" style="padding: 6px 12px; margin: 0; font-size: 0.85em; width: auto;">
             <option value="cyber">Cyber Pop (Vivid Default)</option>
             <option value="velvet">Deep Velvet (Dark)</option>
             <option value="emerald">Emerald Moss (Dark Green Base)</option>
-            <option value="blush">Blush Quartz (Bright Pink Base)</option>
+            <option value="blush" selected>Blush Quartz (Bright Pink Base)</option>
         </select>
     </div>
 
@@ -428,8 +480,8 @@
             <div class="user-info">
                 <span>USER: <span id="current-user" style="color:var(--brand-accent); font-weight: bold;"></span></span>
                 <div>
-                    <button onclick="toggleSettings()" style="padding: 4px 12px; font-size: 0.8em; background:#64748b;">⚙️ ACCOUNT</button>
-                    <button onclick="logout()" style="padding: 4px 12px; font-size: 0.8em; background:#ef4444;">LOGOUT</button>
+                    <button onclick="toggleSettings()" style="padding: 6px 12px; font-size: 0.8em; background:#64748b;">⚙️ ACCOUNT</button>
+                    <button onclick="logout()" style="padding: 6px 12px; font-size: 0.8em; background:#ef4444;">LOGOUT</button>
                 </div>
             </div>
             
@@ -488,7 +540,7 @@
                     <div id="assignment-links-entry" class="dynamic-links-list" style="margin-top: 5px;">
                         <input type="text" class="assign-link-input" placeholder="Paste Link #1">
                     </div>
-                    <button onclick="addLinkField()" type="button" style="padding:4px 10px; font-size:0.75em; margin-top:5px; background:var(--surface-color); color: var(--text-main); border: var(--border-style);">+ ADD ANOTHER LINK</button>
+                    <button onclick="addLinkField()" type="button" style="padding:4px 10px; font-size:0.75em; margin-top:5px; background:var(--surface-color); color: var(--text-main); border: var(--border-style); width: auto;">+ ADD ANOTHER LINK</button>
                 </div>
                 
                 <button onclick="addItem('assignments')" style="margin-top:10px;">SAVE TO CLOUD</button>
@@ -498,16 +550,16 @@
 
         <div id="calendar" class="tab-content">
             <div class="input-group">
-                <span style="font-weight:700; color:var(--brand-accent);">[+] LOG CALENDAR TASK PLANNER</span>
+                <span style="font-weight:700; color:var(--brand-accent); font-size:0.85em;">[+] LOG CALENDAR TASK PLANNER</span>
                 <input type="hidden" id="calendar-selected-date">
                 <input type="text" id="calendar-task-title" placeholder="Task summary details...">
                 <button onclick="addItem('calendar')" style="margin-top: 5px;">COMMIT TASK TO SCHEDULE</button>
             </div>
             <div class="calendar-wrapper">
                 <div class="calendar-header-nav">
-                    <button onclick="navigateMonth(-1)" style="padding: 4px 10px; font-size: 0.8em;">&lt; PREV</button>
-                    <strong id="calendar-month-year-label" style="font-size: 0.95em;">Month Year</strong>
-                    <button onclick="navigateMonth(1)" style="padding: 4px 10px; font-size: 0.8em;">NEXT &gt;</button>
+                    <button onclick="navigateMonth(-1)">&lt; PREV</button>
+                    <strong id="calendar-month-year-label" style="font-size: 0.85em;">Month Year</strong>
+                    <button onclick="navigateMonth(1)">NEXT &gt;</button>
                 </div>
                 <div class="calendar-grid">
                     <div class="calendar-weekday">SUN</div><div class="calendar-weekday">MON</div>
@@ -526,7 +578,7 @@
         <div id="admin" class="tab-content">
             <h2>System User Management</h2>
             <div class="input-group" style="border-color:#ef4444;">
-                <span style="color:#ef4444; font-weight:bold;">[+] MANUALLY PROVISION TERMINAL ACCOUNT</span>
+                <span style="color:#ef4444; font-weight:bold; font-size:0.85em;">[+] MANUALLY PROVISION TERMINAL ACCOUNT</span>
                 <input type="text" id="admin-new-user" placeholder="Enter Username">
                 <input type="password" id="admin-new-pass" placeholder="Enter Password">
                 <button onclick="adminAddUser()" style="background:#ef4444;">GRANT SERVICE ACCESS</button>
@@ -575,6 +627,7 @@
         const KEY = "sb_publishable_kY3--vsG69shv2nt6bS3Xw_WhfPWcfN";
         window.supabase = supabase.createClient(URL, KEY);
         initializeDailyWidgets();
+        document.body.setAttribute('data-theme', 'blush');
     })();
 
     let currentUserRecord = null; 
@@ -693,11 +746,11 @@
                         ${u.is_lifetime_free ? ' <span style="color:var(--brand-accent); font-size:0.75em; font-weight:700;">[FREE FOREVER]</span>' : ''}<br>
                         <span style="font-size:0.75em; color:var(--text-sub);">Last Activated: ${new Date(u.activated_at).toLocaleDateString()}</span>
                     </div>
-                    <div style="display:flex; gap:5px;">
-                        <button onclick="toggleLifetimeFree(${u.id}, ${u.is_lifetime_free})" style="font-size:0.75em; padding:4px 8px; background:transparent; border: 1px solid var(--brand-accent); color:var(--brand-accent);">
+                    <div style="display:flex; gap:5px; flex-wrap: wrap; width: 100%; margin-top: 5px;">
+                        <button onclick="toggleLifetimeFree(${u.id}, ${u.is_lifetime_free})" style="font-size:0.75em; padding:6px 10px; background:transparent; border: 1px solid var(--brand-accent); color:var(--brand-accent); width: auto; flex: 1;">
                             ${u.is_lifetime_free ? 'MAKE PAID' : 'FREE FOREVER'}
                         </button>
-                        <button onclick="reactivateUserTimer(${u.id})" style="font-size:0.75em; padding:4px 8px; background:var(--brand-accent); color:#fff;">
+                        <button onclick="reactivateUserTimer(${u.id})" style="font-size:0.75em; padding:6px 10px; background:var(--brand-accent); color:#fff; width: auto; flex: 1;">
                             RE-ACTIVATE
                         </button>
                     </div>
@@ -875,9 +928,9 @@
             listDiv.innerHTML = '';
             data.forEach(u => {
                 listDiv.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border-style);">
+                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border-style); align-items:center;">
                         <span>👤 ${u.username} ${u.is_original_admin ? '<span style="color:var(--brand-accent); font-weight:700;">[MASTER]</span>' : ''}</span>
-                        ${u.is_original_admin ? '' : `<button onclick="adminDeleteUser(${u.id})" style="background:#ef4444; color:#fff; padding:2px 8px; font-size:0.8em;">REVOKE</button>`}
+                        ${u.is_original_admin ? '' : `<button onclick="adminDeleteUser(${u.id})" style="background:#ef4444; color:#fff; padding:4px 10px; font-size:0.8em; width:auto;">REVOKE</button>`}
                     </div>
                 `;
             });
@@ -946,18 +999,18 @@
 
         matchingTasks.forEach(task => {
             agendaContainer.innerHTML += `
-                <div style="background:var(--card-bg); padding:10px; border-radius:6px; border:var(--border-style); display:flex; justify-content:space-between; align-items:center;">
-                    <div style="flex:1;">
+                <div style="background:var(--card-bg); padding:10px; border-radius:6px; border:var(--border-style); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:120px;">
                         <div id="cal-task-display-${task.id}">
                             <span>📌 ${task.title}</span>
-                            <div style="margin-top:4px;">
-                                <button onclick="enableCalEdit(${task.id})" style="padding:2px 6px; font-size:0.75em; background:transparent; border:1px solid var(--text-sub); color:var(--text-sub);">EDIT</button>
-                                <button onclick="deleteItem(${task.id})" style="padding:2px 6px; font-size:0.75em; background:#ef4444; color:#fff;">REMOVE</button>
+                            <div style="margin-top:6px; display:flex; gap:4px;">
+                                <button onclick="enableCalEdit(${task.id})" style="padding:4px 8px; font-size:0.75em; background:transparent; border:1px solid var(--text-sub); color:var(--text-sub); width:auto;">EDIT</button>
+                                <button onclick="deleteItem(${task.id})" style="padding:4px 8px; font-size:0.75em; background:#ef4444; color:#fff; width:auto;">REMOVE</button>
                             </div>
                         </div>
                         <div id="cal-task-edit-${task.id}" style="display:none;">
-                            <input type="text" id="edit-cal-title-${task.id}" value="${task.title}" style="padding:4px; font-size:0.9em; width:80%;">
-                            <button onclick="saveEdit(${task.id}, 'calendar')" style="padding:4px 8px; font-size:0.75em;">SAVE</button>
+                            <input type="text" id="edit-cal-title-${task.id}" value="${task.title}" style="padding:6px; font-size:0.9em; margin-bottom:4px;">
+                            <button onclick="saveEdit(${task.id}, 'calendar')" style="padding:6px 12px; font-size:0.75em; width:auto;">SAVE</button>
                         </div>
                     </div>
                 </div>
@@ -1049,7 +1102,7 @@
                 notesList.innerHTML += `
                     <div class="card">
                         <div class="card-header" onclick="toggleCard('body-${item.id}')">
-                            <span>📝 ${item.notes ? item.notes.substring(0, 25) : ''}...</span>
+                            <span>📝 ${item.notes ? item.notes.substring(0, 20) : ''}...</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
@@ -1103,7 +1156,7 @@
                             <div id="display-container-${item.id}">
                                 <p style="margin-top:0;"><strong>Instructions:</strong> ${item.notes || 'None'}</p>
                                 <p><strong>Resource Links:</strong></p>
-                                <ul style="padding-left:20px; margin-bottom:0;">${linksHtml || '<li>No links uploaded</li>'}</ul>
+                                <ul style="padding-left:20px; margin-bottom:0; word-break:break-all;">${linksHtml || '<li>No links uploaded</li>'}</ul>
                                 <div class="actions">
                                     <button onclick="enableEditMode(${item.id})">EDIT</button>
                                     <button onclick="deleteItem(${item.id})" class="btn-delete">DELETE</button>
