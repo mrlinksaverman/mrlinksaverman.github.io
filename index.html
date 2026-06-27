@@ -462,7 +462,19 @@
         fetchSubscriptionLedger();
     }
 
-    // --- PROFILE USER DATA (UPDATED WITH DATA MIGRATION SYNC) ---
+    // --- PROFILE USER DATA (COMPREHENSIVE RESET WORKFLOW) ---
+    function toggleSettings() {
+        const panel = document.getElementById('settings-panel');
+        // Fix for first-click dead layout button state
+        const currentDisplay = window.getComputedStyle(panel).display;
+        
+        if (currentDisplay === 'none') {
+            panel.style.display = 'flex';
+        } else {
+            panel.style.display = 'none';
+        }
+    }
+
     async function updateAccountInfo() {
         const newU = document.getElementById('new-username').value.trim();
         const newP = document.getElementById('new-password').value.trim();
@@ -472,14 +484,14 @@
 
         const oldUsername = currentUserRecord.username;
 
-        // 1. Update the user login details profile row
+        // 1. Update system credentials profile info
         const { error: userError } = await window.supabase
             .from('system_users')
             .update({ username: newU, password: newP })
             .eq('id', currentUserRecord.id);
 
         if(!userError) {
-            // 2. DATA MIGRATION SYNC - Migrate links to the new username structure immediately
+            // 2. Automatically sync matching historical entries to the new identity row
             await window.supabase
                 .from('link_saver')
                 .update({ username: newU })
@@ -487,12 +499,11 @@
 
             msg.className = "success"; msg.innerText = "Credentials and data synchronized successfully!";
             
-            // 3. Update global layout states
+            // 3. Update active application layouts
             currentUserRecord.username = newU; 
             currentUserRecord.password = newP;
             document.getElementById('current-user').innerText = newU.toUpperCase();
             
-            // 4. Reload page layout values smoothly
             fetchData();
         } else {
             msg.className = "error"; msg.innerText = "Error: Username might be taken.";
@@ -509,16 +520,19 @@
         container.appendChild(input);
     }
 
-    // --- LINK_SAVER DATA TRANSACTIONS (SECURED VIA RPC) ---
+    // --- LINK_SAVER DATA DIRECT TRANSACTIONS (CLEAN TABLE ACCESS) ---
     async function fetchData() {
         const { data, error } = await window.supabase
-            .rpc('secure_get_user_links', { target_username: currentUserRecord.username });
+            .from('link_saver')
+            .select('*')
+            .eq('username', currentUserRecord.username)
+            .order('created_at', { ascending: false });
 
         if (!error) {
             cloudItems = data;
             renderAll();
         } else {
-            console.error("Data secure pipeline error:", error);
+            console.error("Data pipeline load failure:", error);
         }
     }
 
@@ -672,18 +686,18 @@
                 notesList.innerHTML += `
                     <div class="card">
                         <div class="card-header" onclick="toggleCard('body-${item.id}')">
-                            <span>📝 ${item.notes.substring(0, 25)}...</span>
+                            <span>📝 ${item.notes ? item.notes.substring(0, 25) : ''}...</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
-                                <p style="white-space: pre-wrap;">${item.notes}</p>
+                                <p style="white-space: pre-wrap;">${item.notes || ''}</p>
                                 <div class="actions">
                                     <button onclick="enableEditMode(${item.id})">EDIT</button>
                                     <button onclick="deleteItem(${item.id})">DELETE</button>
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
-                                <textarea id="edit-notes-${item.id}" rows="3">${item.notes}</textarea>
+                                <textarea id="edit-notes-${item.id}" rows="3">${item.notes || ''}</textarea>
                                 <button onclick="saveEdit(${item.id}, 'notes')">SAVE</button>
                             </div>
                         </div>
@@ -693,19 +707,19 @@
                 meetsList.innerHTML += `
                     <div class="card">
                         <div class="card-header" onclick="toggleCard('body-${item.id}')">
-                            <span>📹 ${item.title}</span>
+                            <span>📹 ${item.title || 'Untitled Meeting'}</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
-                                <p>Link: <a href="${item.link}" target="_blank">${item.link}</a></p>
+                                <p>Link: <a href="${item.link}" target="_blank">${item.link || ''}</a></p>
                                 <div class="actions">
                                     <button onclick="enableEditMode(${item.id})">EDIT</button>
                                     <button onclick="deleteItem(${item.id})">DELETE</button>
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
-                                <input type="text" id="edit-title-${item.id}" value="${item.title}">
-                                <input type="text" id="edit-link-${item.id}" value="${item.link}">
+                                <input type="text" id="edit-title-${item.id}" value="${item.title || ''}">
+                                <input type="text" id="edit-link-${item.id}" value="${item.link || ''}">
                                 <button onclick="saveEdit(${item.id}, 'meetings')">SAVE</button>
                             </div>
                         </div>
@@ -720,7 +734,7 @@
                 assignsList.innerHTML += `
                     <div class="card">
                         <div class="card-header" onclick="toggleCard('body-${item.id}')">
-                            <span>📚 ${item.title}</span>
+                            <span>📚 ${item.title || 'Untitled Assignment'}</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
@@ -733,8 +747,8 @@
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
-                                <input type="text" id="edit-title-${item.id}" value="${item.title}">
-                                <textarea id="edit-notes-${item.id}" rows="2">${item.notes}</textarea>
+                                <input type="text" id="edit-title-${item.id}" value="${item.title || ''}">
+                                <textarea id="edit-notes-${item.id}" rows="2">${item.notes || ''}</textarea>
                                 <label style="font-size:0.8em; color:yellow;">Links:</label>
                                 ${inputsHtml}
                                 <input type="text" class="edit-multi-${item.id}" placeholder="Add extra new link...">
