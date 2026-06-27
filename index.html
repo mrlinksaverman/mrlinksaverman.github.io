@@ -3,15 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mrlinksaverman</title>
+    <title>mrlinksaverman // Modern Workspace</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root {
-            --bg-color: #0d0d0d;
-            --matrix-green: #00ff41;
-            --dark-green: #003b00;
-            --text-color: #a0ffa0;
-            --border-style: 1px solid #00ff41;
+        /* --- DYNAMIC THEME SYSTEM DESIGN (GENDER-PREFERENCE BALANCED) --- */
+        /* Default: Cyber Pop (Vivid) */
+        :root, [data-theme="cyber"] {
+            --bg-color: #080e1a;
+            --surface-color: #111b30;
+            --text-main: #e2e8f0;
+            --text-sub: #38bdf8;
+            --brand-accent: #06b6d4;
+            --border-style: 1px solid #1e293b;
+            --shadow-sm: 0 0 15px rgba(6,182,212,0.15);
+            --card-bg: #192641;
+        }
+        [data-theme="velvet"] {
+            --bg-color: #0b0714;
+            --surface-color: #171224;
+            --text-main: #f8fafc;
+            --text-sub: #c084fc;
+            --brand-accent: #a855f7;
+            --border-style: 1px solid #3b2e56;
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.3);
+            --card-bg: #221a35;
+        }
+        /* 1. Dark Green Base Theme */
+        [data-theme="emerald"] {
+            --bg-color: #091711;
+            --surface-color: #11251b;
+            --text-main: #f0fdf4;
+            --text-sub: #4ade80;
+            --brand-accent: #10b981;
+            --border-style: 1px solid #163e2b;
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.4);
+            --card-bg: #162f23;
+        }
+        /* 2. Pinkish Modern (Brighter, Highly Vibrant Pink Base Layout) */
+        [data-theme="blush"] {
+            --bg-color: #ffb3c6;
+            --surface-color: #ffe5ec;
+            --text-main: #3a0007;
+            --text-sub: #a11d33;
+            --brand-accent: #ff4d6d;
+            --border-style: 1px solid #ff85a1;
+            --shadow-sm: 0 4px 12px rgba(255, 77, 109, 0.15);
+            --card-bg: #ffccd5;
         }
 
         html, body {
@@ -19,8 +56,9 @@
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Courier New', Courier, monospace;
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         body {
@@ -36,54 +74,80 @@
             max-width: 650px;
             max-height: 95vh;
             border: var(--border-style);
-            padding: 20px;
-            box-shadow: 0 0 15px var(--dark-green);
-            background-color: #050505;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            background-color: var(--surface-color);
             box-sizing: border-box;
             overflow-y: auto; 
+            transition: background-color 0.3s, border 0.3s;
         }
 
         h1, h2, h3 {
-            color: var(--matrix-green);
+            color: var(--brand-accent);
             text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: -0.5px;
             margin-top: 0;
+            font-weight: 700;
         }
 
         #login-screen {
             display: flex;
             flex-direction: column;
             gap: 15px;
+            padding: 20px 0;
+        }
+
+        .theme-panel-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: var(--border-style);
+        }
+
+        .theme-label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-sub);
         }
 
         input, textarea, select {
-            background-color: #000;
+            background-color: var(--surface-color);
             border: var(--border-style);
-            color: var(--matrix-green);
-            padding: 10px;
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
             font-family: inherit;
+            font-size: 0.95em;
+            box-sizing: border-box;
+            transition: all 0.2s;
         }
 
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
-            box-shadow: 0 0 8px var(--matrix-green);
+            border-color: var(--brand-accent);
+            box-shadow: 0 0 0 3px rgba(255, 77, 109, 0.15);
         }
 
         button {
-            background-color: var(--dark-green);
-            color: var(--matrix-green);
-            border: var(--border-style);
-            padding: 10px;
+            background-color: var(--brand-accent);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
             cursor: pointer;
             font-family: inherit;
-            font-weight: bold;
-            text-transform: uppercase;
+            font-weight: 600;
+            transition: filter 0.2s, transform 0.1s;
         }
 
         button:hover {
-            background-color: var(--matrix-green);
-            color: #000;
+            filter: brightness(1.1);
+        }
+        button:active {
+            transform: scale(0.98);
         }
 
         #dashboard {
@@ -92,7 +156,7 @@
 
         .user-header {
             border-bottom: var(--border-style);
-            padding-bottom: 10px;
+            padding-bottom: 15px;
             margin-bottom: 20px;
         }
 
@@ -107,26 +171,59 @@
             flex-direction: column;
             gap: 10px;
             margin-top: 15px;
-            padding: 10px;
-            border: 1px dashed #ffff00;
-            background: #111;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed var(--brand-accent);
+            background: var(--card-bg);
+        }
+
+        .widgets-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-widget {
+            background: var(--card-bg);
+            border: var(--border-style);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        .widget-title {
+            font-weight: 700;
+            color: var(--brand-accent);
+            display: block;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            font-size: 0.8em;
+            letter-spacing: 0.5px;
         }
 
         .tabs {
             display: flex;
-            gap: 5px;
+            gap: 6px;
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
 
         .tab-btn {
             flex: 1;
-            min-width: 100px;
+            min-width: 90px;
+            background-color: var(--card-bg);
+            color: var(--text-sub);
+            border: var(--border-style);
+            padding: 10px;
+            font-size: 0.85em;
         }
 
         .tab-btn.active {
-            background-color: var(--matrix-green);
-            color: #000;
+            background-color: var(--brand-accent);
+            color: #ffffff;
+            border-color: var(--brand-accent);
         }
 
         .tab-content {
@@ -142,8 +239,10 @@
             flex-direction: column;
             gap: 10px;
             margin-bottom: 20px;
-            padding: 10px;
-            border: 1px dashed var(--matrix-green);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-style);
+            background: var(--card-bg);
         }
 
         .dynamic-links-list {
@@ -154,37 +253,50 @@
 
         .card {
             border: var(--border-style);
-            padding: 10px;
-            margin-bottom: 10px;
-            background: #111;
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 12px;
+            background: var(--surface-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            color: var(--matrix-green);
+            color: var(--text-main);
         }
 
         .card-body {
             display: none;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px dashed var(--dark-green);
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--border-style);
             word-break: break-all;
+            color: var(--text-sub);
+            font-size: 0.95em;
         }
 
         .card-body a {
-            color: #00ffff;
-            text-decoration: none;
+            color: var(--brand-accent);
+            text-decoration: underline;
         }
 
         .actions {
-            margin-top: 10px;
+            margin-top: 12px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
+        }
+
+        .actions button {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .btn-delete {
+            background-color: #ef4444;
         }
 
         .edit-mode input, .edit-mode textarea {
@@ -193,32 +305,118 @@
             margin-bottom: 8px;
         }
 
+        .calendar-wrapper {
+            background: var(--card-bg);
+            border: var(--border-style);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .calendar-header-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            text-align: center;
+        }
+
+        .calendar-weekday {
+            font-size: 0.75em;
+            font-weight: 700;
+            color: var(--text-sub);
+            padding-bottom: 4px;
+        }
+
+        .calendar-cell {
+            background: var(--surface-color);
+            border: var(--border-style);
+            border-radius: 6px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .calendar-cell:hover {
+            border-color: var(--brand-accent);
+            transform: translateY(-1px);
+        }
+
+        .calendar-cell.current-day {
+            border: 2px solid var(--brand-accent);
+            font-weight: bold;
+        }
+
+        .calendar-cell .day-number {
+            align-self: flex-start;
+        }
+
+        .calendar-cell .events-indicator {
+            width: 6px;
+            height: 6px;
+            background-color: var(--brand-accent);
+            border-radius: 50%;
+            align-self: center;
+            margin-bottom: 4px;
+        }
+
+        .calendar-details-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: var(--surface-color);
+            border: var(--border-style);
+            border-radius: 8px;
+        }
+
         .admin-sub-section {
-            border: 1px solid #333;
+            border: var(--border-style);
+            border-radius: 8px;
             padding: 10px;
             margin-bottom: 15px;
-            background: #0a0a0a;
+            background: var(--card-bg);
         }
 
         .admin-sub-card {
-            background: #111;
-            border: 1px solid #222;
-            padding: 8px;
-            margin-bottom: 5px;
+            background: var(--surface-color);
+            border: var(--border-style);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .error { color: #ff3333; text-align: center; font-size: 0.9em; }
-        .success { color: #00ff41; text-align: center; font-size: 0.9em; }
+        .error { color: #ef4444; text-align: center; font-size: 0.9em; font-weight: 600; }
+        .success { color: #10b981; text-align: center; font-size: 0.9em; font-weight: 600; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="theme-panel-wrapper">
+        <span class="theme-label">VISUAL CONFIGURATION:</span>
+        <select id="global-theme-switcher" onchange="applySelectedTheme()" style="padding: 6px 12px; margin: 0; font-size: 0.85em;">
+            <option value="cyber">Cyber Pop (Vivid Default)</option>
+            <option value="velvet">Deep Velvet (Dark)</option>
+            <option value="emerald">Emerald Moss (Dark Green Base)</option>
+            <option value="blush">Blush Quartz (Bright Pink Base)</option>
+        </select>
+    </div>
+
     <div id="login-screen">
-        <h1>// mrlinksaverman</h1>
+        <h1>mrlinksaverman</h1>
         <input type="text" id="username" placeholder="ENTER USERNAME">
         <input type="password" id="password" placeholder="ENTER PASSWORD">
         <button onclick="login()">INITIALIZE CLOUD LOGIN</button>
@@ -228,19 +426,30 @@
     <div id="dashboard">
         <div class="user-header">
             <div class="user-info">
-                <span>USER: <span id="current-user" style="color:var(--matrix-green)"></span></span>
+                <span>USER: <span id="current-user" style="color:var(--brand-accent); font-weight: bold;"></span></span>
                 <div>
-                    <button onclick="toggleSettings()" style="padding: 2px 10px; font-size: 0.8em; background:#333;">⚙️ ACCOUNT SETTINGS</button>
-                    <button onclick="logout()" style="padding: 2px 10px; font-size: 0.8em;">LOGOUT</button>
+                    <button onclick="toggleSettings()" style="padding: 4px 12px; font-size: 0.8em; background:#64748b;">⚙️ ACCOUNT</button>
+                    <button onclick="logout()" style="padding: 4px 12px; font-size: 0.8em; background:#ef4444;">LOGOUT</button>
                 </div>
             </div>
             
             <div id="settings-panel" class="settings-panel">
-                <span style="color:#ffff00; font-size:0.8em;">// CHANGE PROFILE DATA</span>
+                <span style="color:var(--text-main); font-weight: 700; font-size:0.85em;">// CHANGE PROFILE DATA</span>
                 <input type="text" id="new-username" placeholder="New Username">
                 <input type="password" id="new-password" placeholder="New Password">
-                <button onclick="updateAccountInfo()" style="background:#440044; color:#ff00ff; border-color:#ff00ff;">SAVE ACCOUNT UPDATES</button>
+                <button onclick="updateAccountInfo()" style="background:var(--brand-accent);">SAVE ACCOUNT UPDATES</button>
                 <p id="settings-msg"></p>
+            </div>
+        </div>
+
+        <div class="widgets-container">
+            <div class="dashboard-widget">
+                <span class="widget-title">💡 Quote of the Day</span>
+                <span id="widget-quote-display">"Simplicity is the ultimate sophistication."</span>
+            </div>
+            <div class="dashboard-widget">
+                <span class="widget-title">📖 Word of the Day</span>
+                <span id="widget-word-display">"Resilience"</span>
             </div>
         </div>
 
@@ -248,7 +457,8 @@
             <button id="tab-btn-notes" class="tab-btn active" onclick="switchTab('notes')">NOTES</button>
             <button id="tab-btn-meetings" class="tab-btn" onclick="switchTab('meetings')">MEETINGS</button>
             <button id="tab-btn-assignments" class="tab-btn" onclick="switchTab('assignments')">ASSIGNMENTS</button>
-            <button id="admin-tab-btn" class="tab-btn" onclick="switchTab('admin')" style="display:none; background:#800000; color:#fff;">⚠️ ADMIN CONTROL</button>
+            <button id="tab-btn-calendar" class="tab-btn" onclick="switchTab('calendar')">📅 CALENDAR</button>
+            <button id="admin-tab-btn" class="tab-btn" onclick="switchTab('admin')" style="display:none; background:#b91c1c; color:#fff;">⚠️ ADMIN CONTROL</button>
         </div>
 
         <div id="notes" class="tab-content active">
@@ -274,11 +484,11 @@
                 <textarea id="assign-instruction" placeholder="Instructions/Notes..." rows="2"></textarea>
                 
                 <div style="margin-top:5px;">
-                    <label style="font-size:0.8em; color:var(--matrix-green);">ATTACHMENT LINKS:</label>
-                    <div id="assignment-links-entry" class="dynamic-links-list">
+                    <label style="font-size:0.8em; font-weight: 700; color:var(--text-main);">ATTACHMENT LINKS:</label>
+                    <div id="assignment-links-entry" class="dynamic-links-list" style="margin-top: 5px;">
                         <input type="text" class="assign-link-input" placeholder="Paste Link #1">
                     </div>
-                    <button onclick="addLinkField()" type="button" style="padding:2px 8px; font-size:0.75em; margin-top:5px; background:#222;">+ ADD ANOTHER LINK</button>
+                    <button onclick="addLinkField()" type="button" style="padding:4px 10px; font-size:0.75em; margin-top:5px; background:var(--surface-color); color: var(--text-main); border: var(--border-style);">+ ADD ANOTHER LINK</button>
                 </div>
                 
                 <button onclick="addItem('assignments')" style="margin-top:10px;">SAVE TO CLOUD</button>
@@ -286,25 +496,52 @@
             <div id="assignments-list">SYNCING...</div>
         </div>
 
+        <div id="calendar" class="tab-content">
+            <div class="input-group">
+                <span style="font-weight:700; color:var(--brand-accent);">[+] LOG CALENDAR TASK PLANNER</span>
+                <input type="hidden" id="calendar-selected-date">
+                <input type="text" id="calendar-task-title" placeholder="Task summary details...">
+                <button onclick="addItem('calendar')" style="margin-top: 5px;">COMMIT TASK TO SCHEDULE</button>
+            </div>
+            <div class="calendar-wrapper">
+                <div class="calendar-header-nav">
+                    <button onclick="navigateMonth(-1)" style="padding: 4px 10px; font-size: 0.8em;">&lt; PREV</button>
+                    <strong id="calendar-month-year-label" style="font-size: 0.95em;">Month Year</strong>
+                    <button onclick="navigateMonth(1)" style="padding: 4px 10px; font-size: 0.8em;">NEXT &gt;</button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-weekday">SUN</div><div class="calendar-weekday">MON</div>
+                    <div class="calendar-weekday">TUE</div><div class="calendar-weekday">WED</div>
+                    <div class="calendar-weekday">THU</div><div class="calendar-weekday">FRI</div>
+                    <div class="calendar-weekday">SAT</div>
+                </div>
+                <div id="calendar-days-container" class="calendar-grid" style="margin-top: 4px;"></div>
+            </div>
+            <div class="calendar-details-box">
+                <strong id="selected-date-title" style="font-size:0.85em; display:block; margin-bottom:8px;">Select a date grid node...</strong>
+                <div id="calendar-day-agenda-list" style="font-size: 0.9em; display:flex; flex-direction:column; gap:6px;"></div>
+            </div>
+        </div>
+
         <div id="admin" class="tab-content">
             <h2>System User Management</h2>
-            <div class="input-group" style="border-color:#ff3333;">
-                <span style="color:#ff3333; font-weight:bold;">[+] MANUALLY PROVISION TERMINAL ACCOUNT</span>
+            <div class="input-group" style="border-color:#ef4444;">
+                <span style="color:#ef4444; font-weight:bold;">[+] MANUALLY PROVISION TERMINAL ACCOUNT</span>
                 <input type="text" id="admin-new-user" placeholder="Enter Username">
                 <input type="password" id="admin-new-pass" placeholder="Enter Password">
-                <button onclick="adminAddUser()" style="background:#550000; border-color:#ff3333;">GRANT SERVICE ACCESS</button>
+                <button onclick="adminAddUser()" style="background:#ef4444;">GRANT SERVICE ACCESS</button>
                 <p id="admin-msg"></p>
             </div>
 
             <div style="margin: 15px 0; display:flex; flex-direction:column; gap:5px;">
-                <label style="font-size:0.8em; color:#ffff00;">🔍 FILTER LEDGER BY USERNAME:</label>
+                <label style="font-size:0.8em; font-weight: 700; color:var(--text-sub);">🔍 FILTER LEDGER BY USERNAME:</label>
                 <input type="text" id="admin-search-box" oninput="filterAdminLedger()" placeholder="Type username to parse logs...">
             </div>
 
-            <h3 style="color:#00ff41; text-align:left; font-size:0.9em; border-bottom:1px solid #00ff41; margin-top:20px;">[🟢] ACTIVE USERS (TIMER RUNNING)</h3>
+            <h3 style="color:#10b981; text-align:left; font-size:0.9em; border-bottom:1px solid #10b981; margin-top:20px; padding-bottom: 4px;">[🟢] ACTIVE USERS (TIMER RUNNING)</h3>
             <div id="active-subs-container" class="admin-sub-section">Pulling ledger logs...</div>
 
-            <h3 style="color:#ff3333; text-align:left; font-size:0.9em; border-bottom:1px solid #ff3333; margin-top:20px;">[🔴] EXPIRED USERS (TIMER ENDED)</h3>
+            <h3 style="color:#ef4444; text-align:left; font-size:0.9em; border-bottom:1px solid #ef4444; margin-top:20px; padding-bottom: 4px;">[🔴] EXPIRED USERS (TIMER ENDED)</h3>
             <div id="expired-subs-container" class="admin-sub-section">Pulling ledger logs...</div>
 
             <h3 style="margin-top:25px; font-size:0.9em; text-align:left;">Core Terminal Accounts</h3>
@@ -314,15 +551,48 @@
 </div>
 
 <script>
+    const QUOTES_DB = [
+        "Simplify everything. Let clarity guide your code.",
+        "Consistency is what transforms average into excellence.",
+        "Your focus determines your reality across the network.",
+        "The best error handling is design that prevents them.",
+        "Great design scales seamlessly; minor details build giants.",
+        "Efficiency is doing things right. Effectiveness is doing the right things.",
+        "Clean workspace, organized logic architecture.",
+        "Stay curious. Code, learn, refactor, repeat.",
+        "True optimization removes parts instead of polishing them.",
+        "Productivity means executing actions, not managing meetings."
+    ];
+    const WORDS_DB = [
+        "Ebullient (Full of energy)", "Synergy (Combined interaction)", "Acumen (Keen insight)",
+        "Serendipity (Fortunate happenstance)", "Tenacity (Grit and persistence)", "Pragmatic (Practical approach)",
+        "Lucid (Clear and transparent)", "Vigilant (Keenly watchful)", "Salient (Most noticeable feature)",
+        "Paradigmatic (Serving as a model)"
+    ];
+
     (function() {
         const URL = "https://rivjymdnsxgpdilqqpvu.supabase.co";
         const KEY = "sb_publishable_kY3--vsG69shv2nt6bS3Xw_WhfPWcfN";
         window.supabase = supabase.createClient(URL, KEY);
+        initializeDailyWidgets();
     })();
 
     let currentUserRecord = null; 
     let cloudItems = [];
     let globalCachedUsers = []; 
+    let calendarCurrentDate = new Date();
+    let selectedCalendarISO = "";
+
+    function applySelectedTheme() {
+        const selectedTheme = document.getElementById('global-theme-switcher').value;
+        document.body.setAttribute('data-theme', selectedTheme);
+    }
+
+    function initializeDailyWidgets() {
+        const currentDayIndex = new Date().getDate();
+        document.getElementById('widget-quote-display').innerText = `"${QUOTES_DB[currentDayIndex % QUOTES_DB.length]}"`;
+        document.getElementById('widget-word-display').innerText = WORDS_DB[currentDayIndex % WORDS_DB.length];
+    }
 
     function checkIsExpired(userRow) {
         if (userRow.is_original_admin || userRow.is_lifetime_free) return false;
@@ -335,7 +605,6 @@
         return activationDate < cutoffDate;
     }
 
-    // --- LOGIN ENGINE ---
     async function login() {
         const user = document.getElementById('username').value.trim();
         const pass = document.getElementById('password').value.trim();
@@ -348,7 +617,6 @@
             .single();
 
         if (!error && data && data.password === pass) {
-            
             if (checkIsExpired(data)) {
                 document.getElementById('login-error').innerText = "your 2 months have finished, please contact admin to activate it again";
                 return;
@@ -368,6 +636,10 @@
             document.getElementById('new-username').value = data.username;
             document.getElementById('new-password').value = data.password;
             
+            const formatToday = new Date();
+            selectedCalendarISO = `${formatToday.getFullYear()}-${String(formatToday.getMonth()+1).padStart(2,'0')}-${String(formatToday.getDate()).padStart(2,'0')}`;
+            document.getElementById('calendar-selected-date').value = selectedCalendarISO;
+
             fetchData(); 
             if(data.is_original_admin) {
                 fetchAdminUsers();
@@ -385,7 +657,6 @@
         document.getElementById('settings-panel').style.display = 'none';
     }
 
-    // --- ADMIN SYSTEM ARCHITECTURE ---
     async function fetchSubscriptionLedger() {
         const { data, error } = await window.supabase.from('system_users').select('*').order('username', { ascending: true });
         if(!error) {
@@ -418,16 +689,16 @@
             const cardHtml = `
                 <div class="admin-sub-card">
                     <div>
-                        <strong style="color:white;">${u.username.toUpperCase()}</strong>
-                        ${u.is_lifetime_free ? ' <span style="color:#ffff00; font-size:0.75em;">[FREE FOREVER]</span>' : ''}<br>
-                        <span style="font-size:0.75em; color:gray;">Last Activated: ${new Date(u.activated_at).toLocaleDateString()}</span>
+                        <strong style="color:var(--text-main);">${u.username.toUpperCase()}</strong>
+                        ${u.is_lifetime_free ? ' <span style="color:var(--brand-accent); font-size:0.75em; font-weight:700;">[FREE FOREVER]</span>' : ''}<br>
+                        <span style="font-size:0.75em; color:var(--text-sub);">Last Activated: ${new Date(u.activated_at).toLocaleDateString()}</span>
                     </div>
                     <div style="display:flex; gap:5px;">
-                        <button onclick="toggleLifetimeFree(${u.id}, ${u.is_lifetime_free})" style="font-size:0.75em; padding:4px; background:#111; border-color:#ffff00; color:#ffff00;">
+                        <button onclick="toggleLifetimeFree(${u.id}, ${u.is_lifetime_free})" style="font-size:0.75em; padding:4px 8px; background:transparent; border: 1px solid var(--brand-accent); color:var(--brand-accent);">
                             ${u.is_lifetime_free ? 'MAKE PAID' : 'FREE FOREVER'}
                         </button>
-                        <button onclick="reactivateUserTimer(${u.id})" style="font-size:0.75em; padding:4px 8px; background:var(--dark-green); color:var(--matrix-green);">
-                            RE-ACTIVATE (RESET 2MO)
+                        <button onclick="reactivateUserTimer(${u.id})" style="font-size:0.75em; padding:4px 8px; background:var(--brand-accent); color:#fff;">
+                            RE-ACTIVATE
                         </button>
                     </div>
                 </div>
@@ -462,17 +733,10 @@
         fetchSubscriptionLedger();
     }
 
-    // --- PROFILE USER DATA (COMPREHENSIVE RESET WORKFLOW) ---
     function toggleSettings() {
         const panel = document.getElementById('settings-panel');
-        // Fix for first-click dead layout button state
         const currentDisplay = window.getComputedStyle(panel).display;
-        
-        if (currentDisplay === 'none') {
-            panel.style.display = 'flex';
-        } else {
-            panel.style.display = 'none';
-        }
+        panel.style.display = currentDisplay === 'none' ? 'flex' : 'none';
     }
 
     async function updateAccountInfo() {
@@ -481,36 +745,29 @@
         const msg = document.getElementById('settings-msg');
 
         if(!newU || !newP) return;
-
         const oldUsername = currentUserRecord.username;
 
-        // 1. Update system credentials profile info
         const { error: userError } = await window.supabase
             .from('system_users')
             .update({ username: newU, password: newP })
             .eq('id', currentUserRecord.id);
 
         if(!userError) {
-            // 2. Automatically sync matching historical entries to the new identity row
             await window.supabase
                 .from('link_saver')
                 .update({ username: newU })
                 .eq('username', oldUsername);
 
             msg.className = "success"; msg.innerText = "Credentials and data synchronized successfully!";
-            
-            // 3. Update active application layouts
             currentUserRecord.username = newU; 
             currentUserRecord.password = newP;
             document.getElementById('current-user').innerText = newU.toUpperCase();
-            
             fetchData();
         } else {
             msg.className = "error"; msg.innerText = "Error: Username might be taken.";
         }
     }
 
-    // --- MULTIPLE ATTACHMENTS LINK LOGIC ---
     function addLinkField() {
         const container = document.getElementById('assignment-links-entry');
         const input = document.createElement('input');
@@ -520,7 +777,6 @@
         container.appendChild(input);
     }
 
-    // --- LINK_SAVER DATA DIRECT TRANSACTIONS (CLEAN TABLE ACCESS) ---
     async function fetchData() {
         const { data, error } = await window.supabase
             .from('link_saver')
@@ -531,8 +787,7 @@
         if (!error) {
             cloudItems = data;
             renderAll();
-        } else {
-            console.error("Data pipeline load failure:", error);
+            buildInteractiveCalendarGrid();
         }
     }
 
@@ -557,7 +812,6 @@
         else if (category === 'assignments') {
             const title = document.getElementById('assign-title').value.trim();
             const notes = document.getElementById('assign-instruction').value.trim();
-            
             let links = [];
             document.querySelectorAll('.assign-link-input').forEach(input => {
                 if(input.value.trim() !== '') links.push(input.value.trim());
@@ -571,6 +825,15 @@
             document.getElementById('assign-title').value = '';
             document.getElementById('assign-instruction').value = '';
             document.getElementById('assignment-links-entry').innerHTML = '<input type="text" class="assign-link-input" placeholder="Paste Link #1">';
+        }
+        else if (category === 'calendar') {
+            const dateISO = document.getElementById('calendar-selected-date').value;
+            const taskStr = document.getElementById('calendar-task-title').value.trim();
+            if(!dateISO || !taskStr) return;
+            
+            payload.title = taskStr;
+            payload.notes = dateISO; 
+            document.getElementById('calendar-task-title').value = '';
         }
 
         const { error } = await window.supabase.from('link_saver').insert([payload]);
@@ -587,12 +850,13 @@
         } else if (category === 'assignments') {
             updates.title = document.getElementById(`edit-title-${id}`).value;
             updates.notes = document.getElementById(`edit-notes-${id}`).value;
-            
             let links = [];
             document.querySelectorAll(`.edit-multi-${id}`).forEach(inp => {
                 if(inp.value.trim() !== '') links.push(inp.value.trim());
             });
             updates.multi_links = links;
+        } else if (category === 'calendar') {
+            updates.title = document.getElementById(`edit-cal-title-${id}`).value;
         }
 
         const { error } = await window.supabase.from('link_saver').update(updates).eq('id', id);
@@ -604,7 +868,6 @@
         if (!error) fetchData();
     }
 
-    // --- TERMINAL MANAGEMENT Lifecycles ---
     async function fetchAdminUsers() {
         const { data, error } = await window.supabase.from('system_users').select('*').order('id', { ascending: true });
         if(!error) {
@@ -612,9 +875,9 @@
             listDiv.innerHTML = '';
             data.forEach(u => {
                 listDiv.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #333;">
-                        <span>👤 ${u.username} ${u.is_original_admin ? '<span style="color:cyan">[MASTER]</span>' : ''}</span>
-                        ${u.is_original_admin ? '' : `<button onclick="adminDeleteUser(${u.id})" style="background:#cc0000; color:#000; padding:2px 8px; font-size:0.8em;">REVOKE</button>`}
+                    <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid var(--border-style);">
+                        <span>👤 ${u.username} ${u.is_original_admin ? '<span style="color:var(--brand-accent); font-weight:700;">[MASTER]</span>' : ''}</span>
+                        ${u.is_original_admin ? '' : `<button onclick="adminDeleteUser(${u.id})" style="background:#ef4444; color:#fff; padding:2px 8px; font-size:0.8em;">REVOKE</button>`}
                     </div>
                 `;
             });
@@ -627,7 +890,6 @@
         const msg = document.getElementById('admin-msg');
 
         if(!u || !p) return;
-
         let timestamp = new Date().toISOString();
         if(u.toLowerCase() === 'tester2') {
             let backdate = new Date();
@@ -655,13 +917,114 @@
         }
     }
 
-    // --- RENDER CLOUD UI DISPLAY ENGINE ---
+    function navigateMonth(direction) {
+        calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + direction);
+        buildInteractiveCalendarGrid();
+    }
+
+    function selectCalendarDate(isoString) {
+        selectedCalendarISO = isoString;
+        document.getElementById('calendar-selected-date').value = isoString;
+        
+        const parts = isoString.split('-');
+        document.getElementById('selected-date-title').innerText = `AGENDA FOR: ${parts[2]}/${parts[1]}/${parts[0]}`;
+        
+        renderSelectedDateAgenda();
+        buildInteractiveCalendarGrid(); 
+    }
+
+    function renderSelectedDateAgenda() {
+        const agendaContainer = document.getElementById('calendar-day-agenda-list');
+        agendaContainer.innerHTML = "";
+        
+        const matchingTasks = cloudItems.filter(item => item.category === 'calendar' && item.notes === selectedCalendarISO);
+        
+        if(matchingTasks.length === 0) {
+            agendaContainer.innerHTML = '<span style="color:var(--text-sub); font-size:0.9em;">No scheduled tasks for this date node.</span>';
+            return;
+        }
+
+        matchingTasks.forEach(task => {
+            agendaContainer.innerHTML += `
+                <div style="background:var(--card-bg); padding:10px; border-radius:6px; border:var(--border-style); display:flex; justify-content:space-between; align-items:center;">
+                    <div style="flex:1;">
+                        <div id="cal-task-display-${task.id}">
+                            <span>📌 ${task.title}</span>
+                            <div style="margin-top:4px;">
+                                <button onclick="enableCalEdit(${task.id})" style="padding:2px 6px; font-size:0.75em; background:transparent; border:1px solid var(--text-sub); color:var(--text-sub);">EDIT</button>
+                                <button onclick="deleteItem(${task.id})" style="padding:2px 6px; font-size:0.75em; background:#ef4444; color:#fff;">REMOVE</button>
+                            </div>
+                        </div>
+                        <div id="cal-task-edit-${task.id}" style="display:none;">
+                            <input type="text" id="edit-cal-title-${task.id}" value="${task.title}" style="padding:4px; font-size:0.9em; width:80%;">
+                            <button onclick="saveEdit(${task.id}, 'calendar')" style="padding:4px 8px; font-size:0.75em;">SAVE</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function enableCalEdit(id) {
+        document.getElementById(`cal-task-display-${id}`).style.display = 'none';
+        document.getElementById(`cal-task-edit-${id}`).style.display = 'block';
+    }
+
+    function buildInteractiveCalendarGrid() {
+        const container = document.getElementById('calendar-days-container');
+        if(!container) return;
+        container.innerHTML = "";
+
+        const year = calendarCurrentDate.getFullYear();
+        const month = calendarCurrentDate.getMonth();
+
+        const monthLabels = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+        document.getElementById('calendar-month-year-label').innerText = `${monthLabels[month]} ${year}`;
+
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const totalDays = new Date(year, month + 1, 0).getDate();
+        const today = new Date();
+
+        for (let i = 0; i < firstDayIndex; i++) {
+            const blank = document.createElement('div');
+            blank.style.opacity = "0";
+            container.appendChild(blank);
+        }
+
+        for (let day = 1; day <= totalDays; day++) {
+            const currentCellISO = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const cell = document.createElement('div');
+            cell.className = "calendar-cell";
+            
+            if(currentCellISO === selectedCalendarISO) {
+                cell.classList.add('current-day');
+            } else if(day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                cell.style.borderColor = "var(--text-sub)";
+            }
+
+            cell.innerHTML = `<span class="day-number">${day}</span>`;
+            
+            const hasEvents = cloudItems.some(item => item.category === 'calendar' && item.notes === currentCellISO);
+            if(hasEvents) {
+                const dot = document.createElement('div');
+                dot.className = "events-indicator";
+                cell.appendChild(dot);
+            }
+
+            cell.onclick = () => selectCalendarDate(currentCellISO);
+            container.appendChild(cell);
+        }
+
+        renderSelectedDateAgenda();
+    }
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         document.getElementById(`tab-btn-${tabId}`)?.classList.add('active');
         if(tabId === 'admin') document.getElementById('admin-tab-btn').classList.add('active');
+        if(tabId === 'calendar') buildInteractiveCalendarGrid();
     }
 
     function toggleCard(id) {
@@ -690,10 +1053,10 @@
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
-                                <p style="white-space: pre-wrap;">${item.notes || ''}</p>
+                                <p style="white-space: pre-wrap; margin-top:0;">${item.notes || ''}</p>
                                 <div class="actions">
                                     <button onclick="enableEditMode(${item.id})">EDIT</button>
-                                    <button onclick="deleteItem(${item.id})">DELETE</button>
+                                    <button onclick="deleteItem(${item.id})" class="btn-delete">DELETE</button>
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
@@ -711,10 +1074,10 @@
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
-                                <p>Link: <a href="${item.link}" target="_blank">${item.link || ''}</a></p>
+                                <p style="margin-top:0;">Link: <a href="${item.link}" target="_blank">${item.link || ''}</a></p>
                                 <div class="actions">
                                     <button onclick="enableEditMode(${item.id})">EDIT</button>
-                                    <button onclick="deleteItem(${item.id})">DELETE</button>
+                                    <button onclick="deleteItem(${item.id})" class="btn-delete">DELETE</button>
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
@@ -738,18 +1101,18 @@
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
-                                <p><strong>Instructions:</strong> ${item.notes || 'None'}</p>
+                                <p style="margin-top:0;"><strong>Instructions:</strong> ${item.notes || 'None'}</p>
                                 <p><strong>Resource Links:</strong></p>
-                                <ul>${linksHtml || '<li>No links uploaded</li>'}</ul>
+                                <ul style="padding-left:20px; margin-bottom:0;">${linksHtml || '<li>No links uploaded</li>'}</ul>
                                 <div class="actions">
                                     <button onclick="enableEditMode(${item.id})">EDIT</button>
-                                    <button onclick="deleteItem(${item.id})">DELETE</button>
+                                    <button onclick="deleteItem(${item.id})" class="btn-delete">DELETE</button>
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
                                 <input type="text" id="edit-title-${item.id}" value="${item.title || ''}">
                                 <textarea id="edit-notes-${item.id}" rows="2">${item.notes || ''}</textarea>
-                                <label style="font-size:0.8em; color:yellow;">Links:</label>
+                                <label style="font-size:0.8em; font-weight:700; color:var(--text-main); display:block; margin-bottom:4px;">Links:</label>
                                 ${inputsHtml}
                                 <input type="text" class="edit-multi-${item.id}" placeholder="Add extra new link...">
                                 <button onclick="saveEdit(${item.id}, 'assignments')" style="margin-top:5px;">SAVE CHANGES</button>
