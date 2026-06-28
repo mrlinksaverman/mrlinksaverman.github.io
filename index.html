@@ -48,6 +48,22 @@
             --card-bg: #ffccd5;
         }
 
+        /* Smooth video-like color wheel animation for the login screen background */
+        @keyframes loginColorWheel {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 100%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 0%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body.login-active {
+            background: linear-gradient(125deg, #2e154a, #0c2540, #0a3a30, #3d1222, #2e154a);
+            background-size: 400% 400%;
+            animation: loginColorWheel 25s ease-in-out infinite;
+            color: #ffffff;
+        }
+
         html, body {
             min-height: 100vh;
             margin: 0;
@@ -83,6 +99,14 @@
             flex-direction: column;
         }
 
+        /* Custom treatment for transparent background container on login screen */
+        .container.login-mode {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0px;
+        }
+
         h1, h2, h3 {
             color: var(--brand-accent);
             text-align: center;
@@ -91,13 +115,118 @@
             font-weight: 700;
         }
 
+        /* --- NEW LOGIN PAGE STRUCTURE STYLES --- */
         #login-screen {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            padding: 20px 0;
+            gap: 25px;
+            padding: 10px 0;
+            width: 100%;
         }
 
+        .site-intro {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .site-intro h1 {
+            font-size: 3rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 800;
+        }
+
+        .site-intro .slogan {
+            font-size: 1.15rem;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        .login-box-wrapper {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .login-box-wrapper input {
+            background-color: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .login-box-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .login-box-wrapper button {
+            background-color: #ffffff;
+            color: #0c2540;
+            font-weight: 700;
+        }
+
+        .login-box-wrapper button:hover {
+            filter: brightness(0.9);
+        }
+
+        .btn-tester-bypass {
+            background-color: transparent !important;
+            border: 1px dashed rgba(255,255,255,0.4) !important;
+            color: #ffffff !important;
+            margin-top: 5px;
+        }
+
+        .btn-tester-bypass:hover {
+            background-color: rgba(255,255,255,0.1) !important;
+            border-color: #ffffff !important;
+        }
+
+        /* FAQ Styling System */
+        .faq-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .faq-block {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .faq-block h3 {
+            text-align: left;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.45);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .faq-block p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+
+        .faq-block em, .faq-block strong {
+            color: #ffffff;
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* Shared / Traditional layout items */
         .theme-panel-wrapper {
             display: flex;
             justify-content: space-between;
@@ -254,7 +383,6 @@
             display: block;
         }
 
-        /* Input Group Modifications (Collapsible Headers) */
         .input-group {
             margin-bottom: 20px;
             border-radius: 10px;
@@ -278,7 +406,7 @@
         }
 
         .input-group-body {
-            display: none; /* Always minimized by default */
+            display: none;
             padding: 15px;
             flex-direction: column;
             gap: 10px;
@@ -349,7 +477,6 @@
             margin-bottom: 8px;
         }
 
-        /* Hero Banner Box for Next Agenda */
         .hero-agenda-box {
             background: var(--card-bg);
             border: 1px dashed var(--brand-accent);
@@ -440,7 +567,6 @@
             margin-bottom: 2px;
         }
 
-        /* Tiny Event Labels Inside Box Matrix Grid Cells */
         .calendar-cell .cell-agenda-preview {
             background: rgba(6, 182, 212, 0.12);
             color: var(--brand-accent);
@@ -508,7 +634,6 @@
         .error { color: #ef4444; text-align: center; font-size: 0.9em; font-weight: 600; }
         .success { color: #10b981; text-align: center; font-size: 0.9em; font-weight: 600; }
 
-        /* Modern Shared Footer Layout */
         .workspace-footer {
             margin-top: 25px;
             padding-top: 15px;
@@ -520,9 +645,19 @@
             opacity: 0.8;
         }
 
+        /* Login specific footer formatting */
+        .login-box-wrapper .workspace-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 15px;
+            padding-top: 15px;
+        }
+
         @media (max-width: 480px) {
             body { padding: 6px; }
             .container { padding: 14px; border-radius: 12px; }
+            .container.login-mode { padding: 0px; }
+            .login-box-wrapper { padding: 25px 18px; }
             .widgets-container { grid-template-columns: 1fr; gap: 8px; }
             .actions { flex-direction: column; gap: 6px; }
             .actions button { width: 100%; }
@@ -531,9 +666,9 @@
         }
     </style>
 </head>
-<body>
+<body class="login-active"> 
 
-<div class="container">
+<div class="container login-mode" id="main-interface-container">
     <div class="theme-panel-wrapper" id="theme-configuration-bar" style="display: none;">
         <span class="theme-label">VISUAL CONFIGURATION:</span>
         <select id="global-theme-switcher" onchange="applySelectedTheme()" style="padding: 6px 12px; margin: 0; font-size: 0.85em; width: auto;">
@@ -545,11 +680,43 @@
     </div>
 
     <div id="login-screen">
-        <h1>mrlinksaverman</h1>
-        <input type="text" id="username" placeholder="ENTER USERNAME">
-        <input type="password" id="password" placeholder="ENTER PASSWORD">
-        <button onclick="login()">INITIALIZE CLOUD LOGIN</button>
-        <p id="login-error" class="error"></p>
+        
+        <div class="site-intro">
+            <h1>mrlinksaverman</h1>
+            <div class="slogan">An efficient, snappy and straight to the point link management app. Click, sync and get to work.</div>
+        </div>
+
+        <div class="login-box-wrapper">
+            <input type="text" id="username" placeholder="ENTER USERNAME">
+            <input type="password" id="password" placeholder="ENTER PASSWORD">
+            <button onclick="login()">INITIALIZE CLOUD LOGIN</button>
+            
+            <button onclick="loginAsTester()" class="btn-tester-bypass">🚀 TRY DEMO ACCOUNT</button>
+            
+            <p id="login-error" class="error" style="margin:0;"></p>
+            
+            <div class="workspace-footer">
+                @mel -from students for students
+            </div>
+        </div>
+
+        <div class="faq-container">
+            <div class="faq-block">
+                <h3>1. WHY WOULD I EVER NEED THIS?</h3>
+                <p>Most people would say that what this app does is nothing new and the purpose of this can easily be done by copying links n stuffs into a cloud based note apps like google docs or they also say that they can just save the links from group chats to their saved chats on whatsapp or telegram. However, those traditional methods are actually far more sluggish and time consuming than you think. Imagine you're using google docs on your phone to save your links and then boot up your laptop only to wait extra 10 seconds to wait for the website to load extra features that u don't even need for your supposed link bookmark. It's annoying. Similar to using the "Saved Messages" feature in your whatsapp or telegram, over time the links will be lost above other messages that you will be saving and it will just take a lot of time just to find it again. <em>This web app is a more snappy, efficient and organised way to manage your links and just jump right into where you left from your assignments and agendas.</em></p>
+            </div>
+
+            <div class="faq-block">
+                <h3>2. WHY DOES IT LACK SO MANY FEATURES?</h3>
+                <p>Some might say that this web app seems so empty and boring. They would say, " you should add something like music player, place where u can add your slides, uploading a profile picture and make it more customisable. However, if I did add all that, <em>it would beat the whole purpose of being fast, compact and straight to the point. Also, if i add some things like music player, i don't think that they're going to use it here since most of them already got a better app for that.</em></p>
+            </div>
+
+            <div class="faq-block">
+                <h3>3. HOW ABOUT OUR DATA SECURITY?</h3>
+                <p><strong>Completely secure and private.</strong> Your data is protected by enterprise-grade database security, and nobody can see your links but you. How it works: mrlinksaverman connects directly to Supabase (a highly secure, modern cloud database provider). We use Postgres Row-Level Security (RLS). This is a fancy way of saying the database itself acts as a digital vault: it strictly isolates your account so that only your logged-in user ID can read or write your links. Even though the app is built by a student, your data is handled by industry-standard encryption and security protocols. We never sell your data, there are no tracking ads, and your links stay entirely yours.</p>
+            </div>
+        </div>
+
     </div>
 
     <div id="dashboard">
@@ -593,7 +760,7 @@
         <div id="notes" class="tab-content active">
             <div class="input-group">
                 <div class="input-group-header" onclick="toggleInputSection('notes-input-body')">
-                    <span>add notes</span>
+                    <span>ADD NOTES</span>
                     <span id="notes-input-body-icon">+</span>
                 </div>
                 <div id="notes-input-body" class="input-group-body">
@@ -607,7 +774,7 @@
         <div id="meetings" class="tab-content">
             <div class="input-group">
                 <div class="input-group-header" onclick="toggleInputSection('meetings-input-body')">
-                    <span>add meeting links</span>
+                    <span>ADD MEETING LINKS</span>
                     <span id="meetings-input-body-icon">+</span>
                 </div>
                 <div id="meetings-input-body" class="input-group-body">
@@ -622,7 +789,7 @@
         <div id="assignments" class="tab-content">
             <div class="input-group">
                 <div class="input-group-header" onclick="toggleInputSection('assignments-input-body')">
-                    <span>add assignment links</span>
+                    <span>ADD ASSIGNMENT LINKS</span>
                     <span id="assignments-input-body-icon">+</span>
                 </div>
                 <div id="assignments-input-body" class="input-group-body">
@@ -644,7 +811,6 @@
         </div>
 
         <div id="calendar" class="tab-content">
-            <!-- Dynamic Upcoming Priority Agenda Tracking Hero Box -->
             <div id="hero-agenda-banner" class="hero-agenda-box">
                 <span class="hero-agenda-title">⚡ your next agenda</span>
                 <div id="hero-agenda-content" style="color: var(--text-main); font-weight: 500;">Scanning future database entries...</div>
@@ -652,7 +818,7 @@
 
             <div class="input-group">
                 <div class="input-group-header" onclick="toggleInputSection('calendar-input-body')">
-                    <span>add agendas</span>
+                    <span>ADD AGENDAS</span>
                     <span id="calendar-input-body-icon">+</span>
                 </div>
                 <div id="calendar-input-body" class="input-group-body">
@@ -710,10 +876,10 @@
             <h3 style="margin-top:25px; font-size:0.9em; text-align:left;">Core Terminal Accounts</h3>
             <div id="admin-users-list">Pulling terminal logs...</div>
         </div>
-    </div>
 
-    <div class="workspace-footer">
-        @mel -from students for students
+        <div class="workspace-footer">
+            @mel -from students for students
+        </div>
     </div>
 </div>
 
@@ -737,11 +903,39 @@
         "Paradigmatic (Serving as a model)"
     ];
 
+    // ADJUSTMENT 9.3: Immutable static structure maps for the tester bypass ecosystem
+    const TESTER_MOCK_DATA = {
+        notes: [
+            { id: "mock-n-1", isMock: true, category: "notes", notes: "📚 Core Link Strategy: Avoid heavy documents like Google Docs on low bandwidth devices." },
+            { id: "mock-n-2", isMock: true, category: "notes", notes: "🔑 Database Reminder: Supabase manages RLS context seamlessly using the active user authentication tag." },
+            { id: "mock-n-3", isMock: true, category: "notes", notes: "🛠️ Dev Agenda: Keep dependencies fully pruned to minimize page initialization delays." },
+            { id: "mock-n-4", isMock: true, category: "notes", notes: "💡 Marketing Insight: Micro student tools gain high adoption purely via lightning load speeds." },
+            { id: "mock-n-5", isMock: true, category: "notes", notes: "🔒 Security Context: Row-Level Security acts as an isolated digital vault per student user ID." }
+        ],
+        meetings: [
+            { id: "mock-m-1", isMock: true, category: "meetings", title: "Project Sync: Architecture Review", link: "https://meet.google.com/abc-defg-hij" },
+            { id: "mock-m-2", isMock: true, category: "meetings", title: "CS101 Tutorial Room A", link: "https://zoom.us/j/9876543210" },
+            { id: "mock-m-3", isMock: true, category: "meetings", title: "Hackathon Brainstorming Session", link: "https://discord.gg/student-devs" },
+            { id: "mock-m-4", isMock: true, category: "meetings", title: "Math Study Group (Calculus)", link: "https://meet.google.com/xyz-pdqk-wvb" },
+            { id: "mock-m-5", isMock: true, category: "meetings", title: "Office Hours: Professor David", link: "https://teams.microsoft.com/l/meetup-join/example" }
+        ],
+        assignments: [
+            { id: "mock-a-1", isMock: true, category: "assignments", title: "Database Schema Assignment", notes: "Normalize tables to 3NF and provide execution scripts.", multi_links: ["https://supabase.com/docs", "https://dbdiagram.io"] },
+            { id: "mock-a-2", isMock: true, category: "assignments", title: "UI Layout Prototype", notes: "Recreate an ultra-snappy layout that operates flawlessly on mobile viewports.", multi_links: ["https://figma.com", "https://refactoringui.com"] },
+            { id: "mock-a-3", isMock: true, category: "assignments", title: "Operating Systems Lab 3", notes: "Complete memory management scheduling scripts in vanilla language.", multi_links: ["https://github.com/example/os-lab"] },
+            { id: "mock-a-4", isMock: true, category: "assignments", title: "Technical Writing Draft", notes: "Submit a clear executive abstract explaining project micro-dashboard optimization.", multi_links: ["https://overleaf.com"] },
+            { id: "mock-a-5", isMock: true, category: "assignments", title: "Algorithm Analysis Report", notes: "Measure latency metrics across dynamic color-wheel loop engines.", multi_links: ["https://leetcode.com"] }
+        ]
+    };
+
     let currentUserRecord = null; 
     let cloudItems = [];
     let globalCachedUsers = []; 
     let calendarCurrentDate = new Date();
     let selectedCalendarISO = "";
+
+    // ADJUSTMENT 9.4: Volatile local storage array for tester additions that automatically clear out
+    let testerVolatileItems = [];
 
     (function() {
         const URL = "https://rivjymdnsxgpdilqqpvu.supabase.co";
@@ -778,6 +972,7 @@
     }
 
     function checkIsExpired(userRow) {
+        if (userRow.is_tester) return false; // Tester accounts never fire regular time expiration rules
         if (userRow.is_original_admin || userRow.is_lifetime_free) return false;
         if (!userRow.activated_at) return true;
 
@@ -805,7 +1000,9 @@
                 localStorage.removeItem('mls_user_session');
             }
         }
-        document.body.setAttribute('data-theme', 'emerald');
+        
+        document.body.classList.add('login-active');
+        document.getElementById('main-interface-container').classList.add('login-mode');
         document.getElementById('theme-configuration-bar').style.display = 'none';
     }
 
@@ -838,8 +1035,32 @@
         }
     }
 
+    // ADJUSTMENT 9.1: Instantly log in visitor to mock container session bypass
+    function loginAsTester() {
+        const testerRecord = {
+            id: -999,
+            username: "testuser",
+            password: "protected_tester_pass",
+            is_tester: true,
+            is_original_admin: false,
+            is_lifetime_free: false
+        };
+        
+        // Initialize structural tracker layout fields without syncing persistent cloud rows
+        const sessionPayload = {
+            loginTimestamp: new Date().getTime(),
+            userRecord: testerRecord
+        };
+        localStorage.setItem('mls_user_session', JSON.stringify(sessionPayload));
+        executeSessionDashboardActivation(testerRecord);
+    }
+
     function executeSessionDashboardActivation(userDataRecord) {
         currentUserRecord = userDataRecord;
+        
+        document.body.classList.remove('login-active');
+        document.getElementById('main-interface-container').classList.remove('login-mode');
+        
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         document.getElementById('theme-configuration-bar').style.display = 'flex';
@@ -874,14 +1095,24 @@
         }
     }
 
-    function logout() {
+    function logout(forcedMessage = "") {
         localStorage.removeItem('mls_user_session');
         currentUserRecord = null;
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('theme-configuration-bar').style.display = 'none';
+        
+        document.body.classList.add('login-active');
+        document.getElementById('main-interface-container').classList.add('login-mode');
+        document.body.removeAttribute('data-theme');
+        
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('settings-panel').style.display = 'none';
-        document.body.setAttribute('data-theme', 'emerald');
+        
+        if(forcedMessage) {
+            document.getElementById('login-error').innerText = forcedMessage;
+        } else {
+            document.getElementById('login-error').innerText = "";
+        }
     }
 
     async function fetchSubscriptionLedger() {
@@ -966,7 +1197,13 @@
         panel.style.display = currentDisplay === 'none' ? 'flex' : 'none';
     }
 
+    // ADJUSTMENT 9.2: Kick off session instantly if tester tries updating root credentials
     async function updateAccountInfo() {
+        if(currentUserRecord && currentUserRecord.is_tester) {
+            logout("if you want to reset the TESTER account, you should get your own account.");
+            return;
+        }
+
         const newU = document.getElementById('new-username').value.trim();
         const newP = document.getElementById('new-password').value.trim();
         const msg = document.getElementById('settings-msg');
@@ -1011,7 +1248,28 @@
         container.appendChild(input);
     }
 
+    // ADJUSTMENT 9.3 & 9.4: Fetch handles tester dynamic mock layer filters and hour eviction parameters
     async function fetchData() {
+        if(currentUserRecord && currentUserRecord.is_tester) {
+            // ADJUSTMENT 9.4: Evict items whose local storage age exceeds 1 hour (3600000 ms)
+            const rightNow = new Date().getTime();
+            testerVolatileItems = testerVolatileItems.filter(item => (rightNow - item.timestamp) < 3600000);
+
+            // Merge unalterable elements with current volatile cache nodes
+            cloudItems = [
+                ...TESTER_MOCK_DATA.notes,
+                ...TESTER_MOCK_DATA.meetings,
+                ...TESTER_MOCK_DATA.assignments,
+                ...generateTesterMonthlyAgendas(),
+                ...testerVolatileItems
+            ];
+            
+            renderAll();
+            calculateAndRenderHeroAgenda();
+            buildInteractiveCalendarGrid();
+            return;
+        }
+
         const { data, error } = await window.supabase
             .from('link_saver')
             .select('*')
@@ -1026,7 +1284,29 @@
         }
     }
 
-    /* Computes and Updates the Upcoming Agenda Hero Box Display Element */
+    // ADJUSTMENT 9.3: Structural loop generating agendas for current view, preceding month, and upcoming month
+    function generateTesterMonthlyAgendas() {
+        const generatedAgendas = [];
+        const currentYear = calendarCurrentDate.getFullYear();
+        const currentMonth = calendarCurrentDate.getMonth();
+        
+        // Loop targeting previous, current, and next target view months
+        for (let mOffset = -1; mOffset <= 1; mOffset++) {
+            let targetDate = new Date(currentYear, currentMonth + mOffset, 1);
+            let y = targetDate.getFullYear();
+            let m = String(targetDate.getMonth() + 1).padStart(2, '0');
+            
+            generatedAgendas.push(
+                { id: `mock-c-1-${y}-${m}`, isMock: true, category: "calendar", title: "📝 Review Semester Syllabus", notes: `${y}-${m}-02` },
+                { id: `mock-c-2-${y}-${m}`, isMock: true, category: "calendar", title: "🚀 Hackathon Submission Deadlines", notes: `${y}-${m}-09` },
+                { id: `mock-c-3-${y}-${m}`, isMock: true, category: "calendar", title: "🔬 Midterm Laboratory Evaluation", notes: `${y}-${m}-16` },
+                { id: `mock-c-4-${y}-${m}`, isMock: true, category: "calendar", title: "👥 Group Workspace Status Sync", notes: `${y}-${m}-23` },
+                { id: `mock-c-5-${y}-${m}`, isMock: true, category: "calendar", title: "📅 Premium Domain Renewal Check", notes: `${y}-${m}-28` }
+            );
+        }
+        return generatedAgendas;
+    }
+
     function calculateAndRenderHeroAgenda() {
         const displayBox = document.getElementById('hero-agenda-content');
         if(!displayBox) return;
@@ -1034,7 +1314,6 @@
         const todayObj = new Date();
         todayObj.setHours(0,0,0,0);
 
-        // Filter valid calendar entries belonging to today or future dates
         const futureAgendas = cloudItems.filter(item => {
             if (item.category !== 'calendar' || !item.notes) return false;
             const itemDate = new Date(item.notes + "T00:00:00");
@@ -1046,11 +1325,9 @@
             return;
         }
 
-        // Sort descending/ascending chronological alignment to find the closest event
         futureAgendas.sort((a, b) => new Date(a.notes + "T00:00:00") - new Date(b.notes + "T00:00:00"));
         const nextAgenda = futureAgendas[0];
 
-        // Format dates cleanly
         const dateParts = nextAgenda.notes.split('-');
         const formattedDateString = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
 
@@ -1061,6 +1338,7 @@
     }
 
     async function addItem(category) {
+        let isTesterSession = (currentUserRecord && currentUserRecord.is_tester);
         let payload = { username: currentUserRecord.username, category: category };
 
         if (category === 'notes') {
@@ -1105,11 +1383,51 @@
             document.getElementById('calendar-task-title').value = '';
         }
 
+        // ADJUSTMENT 9.4: Route new tester entries to volatile transient cache storage array rather than cloud
+        if(isTesterSession) {
+            payload.id = "volatile-" + Math.random().toString(36).substring(2, 9);
+            payload.timestamp = new Date().getTime();
+            testerVolatileItems.push(payload);
+            fetchData();
+            return;
+        }
+
         const { error } = await window.supabase.from('link_saver').insert([payload]);
         if (!error) fetchData(); 
     }
 
     async function saveEdit(id, category) {
+        // ADJUSTMENT 9.3: Terminate editing attempt if targeting frozen mock elements
+        if(String(id).startsWith("mock-")) {
+            alert("Tester account constraints enabled: Core template entries cannot be modified.");
+            fetchData();
+            return;
+        }
+
+        let isTesterSession = (currentUserRecord && currentUserRecord.is_tester);
+        let targetItem = cloudItems.find(item => item.id === id);
+
+        if(isTesterSession && targetItem) {
+            if (category === 'notes') {
+                targetItem.notes = document.getElementById(`edit-notes-${id}`).value;
+            } else if (category === 'meetings') {
+                targetItem.title = document.getElementById(`edit-title-${id}`).value;
+                targetItem.link = document.getElementById(`edit-link-${id}`).value;
+            } else if (category === 'assignments') {
+                targetItem.title = document.getElementById(`edit-title-${id}`).value;
+                targetItem.notes = document.getElementById(`edit-notes-${id}`).value;
+                let links = [];
+                document.querySelectorAll(`.edit-multi-${id}`).forEach(inp => {
+                    if(inp.value.trim() !== '') links.push(inp.value.trim());
+                });
+                targetItem.multi_links = links;
+            } else if (category === 'calendar') {
+                targetItem.title = document.getElementById(`edit-cal-title-${id}`).value;
+            }
+            fetchData();
+            return;
+        }
+
         let updates = {};
         if (category === 'notes') {
             updates.notes = document.getElementById(`edit-notes-${id}`).value;
@@ -1133,6 +1451,18 @@
     }
 
     async function deleteItem(id) {
+        // ADJUSTMENT 9.3: Intercept and drop deletion attempt if targeting mock structures
+        if(String(id).startsWith("mock-")) {
+            alert("Tester account constraints enabled: Core template entries cannot be deleted.");
+            return;
+        }
+
+        if(currentUserRecord && currentUserRecord.is_tester) {
+            testerVolatileItems = testerVolatileItems.filter(item => item.id !== id);
+            fetchData();
+            return;
+        }
+
         const { error } = await window.supabase.from('link_saver').delete().eq('id', id);
         if (!error) fetchData();
     }
@@ -1213,15 +1543,15 @@
                 <div style="background:var(--card-bg); padding:10px; border-radius:6px; border:var(--border-style); display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
                     <div style="flex:1; min-width:120px;">
                         <div id="cal-task-display-${task.id}">
-                            <span>📌 ${task.title}</span>
+                            <span>📌 ${task.title} ${task.isMock ? '<span style="color:var(--brand-accent); font-size:0.75em;">[MOCK]</span>' : ''}</span>
                             <div style="margin-top:6px; display:flex; gap:4px;">
-                                <button onclick="enableCalEdit(${task.id})" style="padding:4px 8px; font-size:0.75em; background:transparent; border:1px solid var(--text-sub); color:var(--text-sub); width:auto;">EDIT</button>
-                                <button onclick="deleteItem(${task.id})" style="padding:4px 8px; font-size:0.75em; background:#ef4444; color:#fff; width:auto;">REMOVE</button>
+                                <button onclick="enableCalEdit('${task.id}')" style="padding:4px 8px; font-size:0.75em; background:transparent; border:1px solid var(--text-sub); color:var(--text-sub); width:auto;">EDIT</button>
+                                <button onclick="deleteItem('${task.id}')" style="padding:4px 8px; font-size:0.75em; background:#ef4444; color:#fff; width:auto;">REMOVE</button>
                             </div>
                         </div>
                         <div id="cal-task-edit-${task.id}" style="display:none;">
                             <input type="text" id="edit-cal-title-${task.id}" value="${task.title}" style="padding:6px; font-size:0.9em; margin-bottom:4px;">
-                            <button onclick="saveEdit(${task.id}, 'calendar')" style="padding:6px 12px; font-size:0.75em; width:auto;">SAVE</button>
+                            <button onclick="saveEdit('${task.id}', 'calendar')" style="padding:6px 12px; font-size:0.75em; width:auto;">SAVE</button>
                         </div>
                     </div>
                 </div>
@@ -1268,12 +1598,11 @@
 
             cell.innerHTML = `<span class="day-number">${day}</span>`;
             
-            // Querying DB items to render inline text preview nodes directly within dates
             const dayAgendas = cloudItems.filter(item => item.category === 'calendar' && item.notes === currentCellISO);
             dayAgendas.forEach(task => {
                 const previewSpan = document.createElement('span');
                 previewSpan.className = "cell-agenda-preview";
-                previewSpan.innerText = task.title;
+                previewSpan.innerText = task.title.replace('📌 ', '').replace('📝 ', '').replace('🚀 ', '').replace('🔬 ', '').replace('👥 ', '').replace('📅 ', '');
                 previewSpan.title = task.title; 
                 cell.appendChild(previewSpan);
             });
@@ -1319,19 +1648,19 @@
                 notesList.innerHTML += `
                     <div class="card">
                         <div class="card-header" onclick="toggleCard('body-${item.id}')">
-                            <span>📝 ${item.notes ? item.notes.substring(0, 20) : ''}...</span>
+                            <span>📝 ${item.notes ? item.notes.substring(0, 20) : ''}... ${item.isMock ? '<span style="color:var(--brand-accent); font-size:0.75em;">[MOCK]</span>' : ''}</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
                                 <p style="white-space: pre-wrap; margin-top:0;">${item.notes || ''}</p>
                                 <div class="actions">
-                                    <button onclick="enableEditMode(${item.id})">EDIT</button>
-                                    <button onclick="deleteItem(${item.id})" class="btn-delete">DELETE</button>
+                                    <button onclick="enableEditMode('${item.id}')">EDIT</button>
+                                    <button onclick="deleteItem('${item.id}')" class="btn-delete">DELETE</button>
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
                                 <textarea id="edit-notes-${item.id}" rows="3">${item.notes || ''}</textarea>
-                                <button onclick="saveEdit(${item.id}, 'notes')">SAVE</button>
+                                <button onclick="saveEdit('${item.id}', 'notes')">SAVE</button>
                             </div>
                         </div>
                     </div>`;
@@ -1340,20 +1669,20 @@
                 meetsList.innerHTML += `
                     <div class="card">
                         <div class="card-header" onclick="toggleCard('body-${item.id}')">
-                            <span>📹 ${item.title || 'Untitled Meeting'}</span>
+                            <span>📹 ${item.title || 'Untitled Meeting'} ${item.isMock ? '<span style="color:var(--brand-accent); font-size:0.75em;">[MOCK]</span>' : ''}</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
                                 <p style="margin-top:0;">Link: <a href="${item.link}" target="_blank">${item.link || ''}</a></p>
                                 <div class="actions">
-                                    <button onclick="enableEditMode(${item.id})">EDIT</button>
-                                    <button onclick="deleteItem(${item.id})" class="btn-delete">DELETE</button>
+                                    <button onclick="enableEditMode('${item.id}')">EDIT</button>
+                                    <button onclick="deleteItem('${item.id}')" class="btn-delete">DELETE</button>
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
                                 <input type="text" id="edit-title-${item.id}" value="${item.title || ''}">
                                 <input type="text" id="edit-link-${item.id}" value="${item.link || ''}">
-                                <button onclick="saveEdit(${item.id}, 'meetings')">SAVE</button>
+                                <button onclick="saveEdit('${item.id}', 'meetings')">SAVE</button>
                             </div>
                         </div>
                     </div>`;
@@ -1367,7 +1696,7 @@
                 assignsList.innerHTML += `
                     <div class="card">
                         <div class="card-header" onclick="toggleCard('body-${item.id}')">
-                            <span>📚 ${item.title || 'Untitled Assignment'}</span>
+                            <span>📚 ${item.title || 'Untitled Assignment'} ${item.isMock ? '<span style="color:var(--brand-accent); font-size:0.75em;">[MOCK]</span>' : ''}</span>
                         </div>
                         <div id="body-${item.id}" class="card-body">
                             <div id="display-container-${item.id}">
@@ -1375,8 +1704,8 @@
                                 <p><strong>Resource Links:</strong></p>
                                 <ul style="padding-left:20px; margin-bottom:0; word-break:break-all;">${linksHtml || '<li>No links uploaded</li>'}</ul>
                                 <div class="actions">
-                                    <button onclick="enableEditMode(${item.id})">EDIT</button>
-                                    <button onclick="deleteItem(${item.id})" class="btn-delete">DELETE</button>
+                                    <button onclick="enableEditMode('${item.id}')">EDIT</button>
+                                    <button onclick="deleteItem('${item.id}')" class="btn-delete">DELETE</button>
                                 </div>
                             </div>
                             <div id="edit-container-${item.id}" class="edit-mode" style="display:none;">
@@ -1385,7 +1714,7 @@
                                 <label style="font-size:0.8em; font-weight:700; color:var(--text-main); display:block; margin-bottom:4px;">Links:</label>
                                 ${inputsHtml}
                                 <input type="text" class="edit-multi-${item.id}" placeholder="Add extra new link...">
-                                <button onclick="saveEdit(${item.id}, 'assignments')" style="margin-top:5px;">SAVE CHANGES</button>
+                                <button onclick="saveEdit('${item.id}', 'assignments')" style="margin-top:5px;">SAVE CHANGES</button>
                             </div>
                         </div>
                     </div>`;
