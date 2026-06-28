@@ -6,8 +6,7 @@
     <title>mrlinksaverman // Modern Workspace</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* --- DYNAMIC THEME SYSTEM DESIGN (GENDER-PREFERENCE BALANCED) --- */
-        /* Default: Cyber Pop (Vivid) */
+        /* --- DYNAMIC THEME SYSTEM DESIGN --- */
         :root, [data-theme="cyber"] {
             --bg-color: #080e1a;
             --surface-color: #111b30;
@@ -28,7 +27,6 @@
             --shadow-sm: 0 4px 15px rgba(0,0,0,0.3);
             --card-bg: #221a35;
         }
-        /* 1. Dark Green Base Theme */
         [data-theme="emerald"] {
             --bg-color: #091711;
             --surface-color: #11251b;
@@ -39,7 +37,6 @@
             --shadow-sm: 0 4px 15px rgba(0,0,0,0.4);
             --card-bg: #162f23;
         }
-        /* 2. Pinkish Modern (Bright Pink Base Layout) */
         [data-theme="blush"] {
             --bg-color: #ffb3c6;
             --surface-color: #ffe5ec;
@@ -52,7 +49,7 @@
         }
 
         html, body {
-            min-height: 100%;
+            min-height: 100vh;
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
@@ -82,6 +79,8 @@
             word-wrap: break-word;
             overflow-wrap: break-word;
             transition: background-color 0.3s, border 0.3s;
+            display: flex;
+            flex-direction: column;
         }
 
         h1, h2, h3 {
@@ -96,7 +95,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            padding: 10px 0;
+            padding: 20px 0;
         }
 
         .theme-panel-wrapper {
@@ -255,15 +254,35 @@
             display: block;
         }
 
+        /* Input Group Modifications (Collapsible Headers) */
         .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
             margin-bottom: 20px;
-            padding: 15px;
             border-radius: 10px;
             border: 1px solid var(--border-style);
             background: var(--card-bg);
+            overflow: hidden;
+        }
+
+        .input-group-header {
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: var(--brand-accent);
+            user-select: none;
+            text-transform: lowercase;
+        }
+
+        .input-group-body {
+            display: none; /* Always minimized by default */
+            padding: 15px;
+            flex-direction: column;
+            gap: 10px;
+            border-top: 1px solid var(--border-style);
         }
 
         .dynamic-links-list {
@@ -330,6 +349,26 @@
             margin-bottom: 8px;
         }
 
+        /* Hero Banner Box for Next Agenda */
+        .hero-agenda-box {
+            background: var(--card-bg);
+            border: 1px dashed var(--brand-accent);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 18px;
+            font-size: 0.9em;
+            box-shadow: var(--shadow-sm);
+        }
+        .hero-agenda-title {
+            font-weight: 800;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            color: var(--brand-accent);
+            display: block;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
         .calendar-wrapper {
             background: var(--card-bg);
             border: var(--border-style);
@@ -370,10 +409,11 @@
             background: var(--surface-color);
             border: var(--border-style);
             border-radius: 6px;
-            aspect-ratio: 1;
+            min-height: 55px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
+            align-items: stretch;
             padding: 4px;
             font-size: 0.75em;
             cursor: pointer;
@@ -381,6 +421,7 @@
             box-sizing: border-box;
             min-width: 0;
             transition: all 0.2s;
+            overflow: hidden;
         }
 
         .calendar-cell:hover {
@@ -395,15 +436,40 @@
 
         .calendar-cell .day-number {
             align-self: flex-start;
+            font-weight: 700;
+            margin-bottom: 2px;
         }
 
-        .calendar-cell .events-indicator {
-            width: 5px;
-            height: 5px;
-            background-color: var(--brand-accent);
-            border-radius: 50%;
-            align-self: center;
-            margin-bottom: 2px;
+        /* Tiny Event Labels Inside Box Matrix Grid Cells */
+        .calendar-cell .cell-agenda-preview {
+            background: rgba(6, 182, 212, 0.12);
+            color: var(--brand-accent);
+            font-size: 0.65em;
+            padding: 1px 3px;
+            border-radius: 3px;
+            margin-top: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: left;
+            display: block;
+            border-left: 2px solid var(--brand-accent);
+        }
+
+        [data-theme="emerald"] .calendar-cell .cell-agenda-preview {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--brand-accent);
+            border-left-color: var(--brand-accent);
+        }
+        [data-theme="velvet"] .calendar-cell .cell-agenda-preview {
+            background: rgba(168, 85, 247, 0.12);
+            color: var(--brand-accent);
+            border-left-color: var(--brand-accent);
+        }
+        [data-theme="blush"] .calendar-cell .cell-agenda-preview {
+            background: rgba(255, 77, 109, 0.12);
+            color: var(--brand-accent);
+            border-left-color: var(--brand-accent);
         }
 
         .calendar-details-box {
@@ -442,28 +508,39 @@
         .error { color: #ef4444; text-align: center; font-size: 0.9em; font-weight: 600; }
         .success { color: #10b981; text-align: center; font-size: 0.9em; font-weight: 600; }
 
-        /* Mobile specific balance adjustments */
+        /* Modern Shared Footer Layout */
+        .workspace-footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: var(--border-style);
+            text-align: center;
+            font-size: 0.75em;
+            letter-spacing: 0.5px;
+            color: var(--text-sub);
+            opacity: 0.8;
+        }
+
         @media (max-width: 480px) {
             body { padding: 6px; }
             .container { padding: 14px; border-radius: 12px; }
             .widgets-container { grid-template-columns: 1fr; gap: 8px; }
-            .tabs { grid-template-columns: repeat(2, 1fr); }
             .actions { flex-direction: column; gap: 6px; }
             .actions button { width: 100%; }
             .calendar-weekday { font-size: 0.6em; }
+            .calendar-cell { min-height: 48px; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="theme-panel-wrapper">
+    <div class="theme-panel-wrapper" id="theme-configuration-bar" style="display: none;">
         <span class="theme-label">VISUAL CONFIGURATION:</span>
         <select id="global-theme-switcher" onchange="applySelectedTheme()" style="padding: 6px 12px; margin: 0; font-size: 0.85em; width: auto;">
             <option value="cyber">Cyber Pop (Vivid Default)</option>
             <option value="velvet">Deep Velvet (Dark)</option>
-            <option value="emerald">Emerald Moss (Dark Green Base)</option>
-            <option value="blush" selected>Blush Quartz (Bright Pink Base)</option>
+            <option value="emerald" selected>Emerald Moss (Dark Green Base)</option>
+            <option value="blush">Blush Quartz (Bright Pink Base)</option>
         </select>
     </div>
 
@@ -515,46 +592,76 @@
 
         <div id="notes" class="tab-content active">
             <div class="input-group">
-                <textarea id="note-text" placeholder="Type cloud note here..." rows="3"></textarea>
-                <button onclick="addItem('notes')">SAVE TO CLOUD</button>
+                <div class="input-group-header" onclick="toggleInputSection('notes-input-body')">
+                    <span>add notes</span>
+                    <span id="notes-input-body-icon">+</span>
+                </div>
+                <div id="notes-input-body" class="input-group-body">
+                    <textarea id="note-text" placeholder="Type cloud note here..." rows="3"></textarea>
+                    <button onclick="addItem('notes')">SAVE TO CLOUD</button>
+                </div>
             </div>
             <div id="notes-list">SYNCING...</div>
         </div>
 
         <div id="meetings" class="tab-content">
             <div class="input-group">
-                <input type="text" id="meet-title" placeholder="Meeting Title">
-                <input type="text" id="meet-link" placeholder="Paste Link Here">
-                <button onclick="addItem('meetings')">SAVE TO CLOUD</button>
+                <div class="input-group-header" onclick="toggleInputSection('meetings-input-body')">
+                    <span>add meeting links</span>
+                    <span id="meetings-input-body-icon">+</span>
+                </div>
+                <div id="meetings-input-body" class="input-group-body">
+                    <input type="text" id="meet-title" placeholder="Meeting Title">
+                    <input type="text" id="meet-link" placeholder="Paste Link Here">
+                    <button onclick="addItem('meetings')">SAVE TO CLOUD</button>
+                </div>
             </div>
             <div id="meetings-list">SYNCING...</div>
         </div>
 
         <div id="assignments" class="tab-content">
             <div class="input-group">
-                <input type="text" id="assign-title" placeholder="Assignment Title">
-                <textarea id="assign-instruction" placeholder="Instructions/Notes..." rows="2"></textarea>
-                
-                <div style="margin-top:5px;">
-                    <label style="font-size:0.8em; font-weight: 700; color:var(--text-main);">ATTACHMENT LINKS:</label>
-                    <div id="assignment-links-entry" class="dynamic-links-list" style="margin-top: 5px;">
-                        <input type="text" class="assign-link-input" placeholder="Paste Link #1">
-                    </div>
-                    <button onclick="addLinkField()" type="button" style="padding:4px 10px; font-size:0.75em; margin-top:5px; background:var(--surface-color); color: var(--text-main); border: var(--border-style); width: auto;">+ ADD ANOTHER LINK</button>
+                <div class="input-group-header" onclick="toggleInputSection('assignments-input-body')">
+                    <span>add assignment links</span>
+                    <span id="assignments-input-body-icon">+</span>
                 </div>
-                
-                <button onclick="addItem('assignments')" style="margin-top:10px;">SAVE TO CLOUD</button>
+                <div id="assignments-input-body" class="input-group-body">
+                    <input type="text" id="assign-title" placeholder="Assignment Title">
+                    <textarea id="assign-instruction" placeholder="Instructions/Notes..." rows="2"></textarea>
+                    
+                    <div style="margin-top:5px;">
+                        <label style="font-size:0.8em; font-weight: 700; color:var(--text-main);">ATTACHMENT LINKS:</label>
+                        <div id="assignment-links-entry" class="dynamic-links-list" style="margin-top: 5px;">
+                            <input type="text" class="assign-link-input" placeholder="Paste Link #1">
+                        </div>
+                        <button onclick="addLinkField()" type="button" style="padding:4px 10px; font-size:0.75em; margin-top:5px; background:var(--surface-color); color: var(--text-main); border: var(--border-style); width: auto;">+ ADD ANOTHER LINK</button>
+                    </div>
+                    
+                    <button onclick="addItem('assignments')" style="margin-top:10px;">SAVE TO CLOUD</button>
+                </div>
             </div>
             <div id="assignments-list">SYNCING...</div>
         </div>
 
         <div id="calendar" class="tab-content">
-            <div class="input-group">
-                <span style="font-weight:700; color:var(--brand-accent); font-size:0.85em;">[+] LOG CALENDAR TASK PLANNER</span>
-                <input type="hidden" id="calendar-selected-date">
-                <input type="text" id="calendar-task-title" placeholder="Task summary details...">
-                <button onclick="addItem('calendar')" style="margin-top: 5px;">COMMIT TASK TO SCHEDULE</button>
+            <!-- Dynamic Upcoming Priority Agenda Tracking Hero Box -->
+            <div id="hero-agenda-banner" class="hero-agenda-box">
+                <span class="hero-agenda-title">⚡ your next agenda</span>
+                <div id="hero-agenda-content" style="color: var(--text-main); font-weight: 500;">Scanning future database entries...</div>
             </div>
+
+            <div class="input-group">
+                <div class="input-group-header" onclick="toggleInputSection('calendar-input-body')">
+                    <span>add agendas</span>
+                    <span id="calendar-input-body-icon">+</span>
+                </div>
+                <div id="calendar-input-body" class="input-group-body">
+                    <input type="hidden" id="calendar-selected-date">
+                    <input type="text" id="calendar-task-title" placeholder="Task summary details...">
+                    <button onclick="addItem('calendar')">COMMIT TASK TO SCHEDULE</button>
+                </div>
+            </div>
+            
             <div class="calendar-wrapper">
                 <div class="calendar-header-nav">
                     <button onclick="navigateMonth(-1)">&lt; PREV</button>
@@ -578,11 +685,15 @@
         <div id="admin" class="tab-content">
             <h2>System User Management</h2>
             <div class="input-group" style="border-color:#ef4444;">
-                <span style="color:#ef4444; font-weight:bold; font-size:0.85em;">[+] MANUALLY PROVISION TERMINAL ACCOUNT</span>
-                <input type="text" id="admin-new-user" placeholder="Enter Username">
-                <input type="password" id="admin-new-pass" placeholder="Enter Password">
-                <button onclick="adminAddUser()" style="background:#ef4444;">GRANT SERVICE ACCESS</button>
-                <p id="admin-msg"></p>
+                <div class="input-group-header" style="color:#ef4444; text-transform: none;">
+                    <span>[+] MANUALLY PROVISION TERMINAL ACCOUNT</span>
+                </div>
+                <div class="input-group-body" style="display: flex;">
+                    <input type="text" id="admin-new-user" placeholder="Enter Username">
+                    <input type="password" id="admin-new-pass" placeholder="Enter Password">
+                    <button onclick="adminAddUser()" style="background:#ef4444;">GRANT SERVICE ACCESS</button>
+                    <p id="admin-msg"></p>
+                </div>
             </div>
 
             <div style="margin: 15px 0; display:flex; flex-direction:column; gap:5px;">
@@ -599,6 +710,10 @@
             <h3 style="margin-top:25px; font-size:0.9em; text-align:left;">Core Terminal Accounts</h3>
             <div id="admin-users-list">Pulling terminal logs...</div>
         </div>
+    </div>
+
+    <div class="workspace-footer">
+        @mel -from students for students
     </div>
 </div>
 
@@ -622,23 +737,38 @@
         "Paradigmatic (Serving as a model)"
     ];
 
-    (function() {
-        const URL = "https://rivjymdnsxgpdilqqpvu.supabase.co";
-        const KEY = "sb_publishable_kY3--vsG69shv2nt6bS3Xw_WhfPWcfN";
-        window.supabase = supabase.createClient(URL, KEY);
-        initializeDailyWidgets();
-        document.body.setAttribute('data-theme', 'blush');
-    })();
-
     let currentUserRecord = null; 
     let cloudItems = [];
     let globalCachedUsers = []; 
     let calendarCurrentDate = new Date();
     let selectedCalendarISO = "";
 
+    (function() {
+        const URL = "https://rivjymdnsxgpdilqqpvu.supabase.co";
+        const KEY = "sb_publishable_kY3--vsG69shv2nt6bS3Xw_WhfPWcfN";
+        window.supabase = supabase.createClient(URL, KEY);
+        initializeDailyWidgets();
+        checkSavedSession();
+    })();
+
     function applySelectedTheme() {
         const selectedTheme = document.getElementById('global-theme-switcher').value;
         document.body.setAttribute('data-theme', selectedTheme);
+        if (currentUserRecord) {
+            localStorage.setItem(`theme_pref_${currentUserRecord.username}`, selectedTheme);
+        }
+    }
+
+    function toggleInputSection(bodyId) {
+        const targetBody = document.getElementById(bodyId);
+        const iconEl = document.getElementById(`${bodyId}-icon`);
+        if(window.getComputedStyle(targetBody).display === "none") {
+            targetBody.style.display = "flex";
+            if(iconEl) iconEl.innerText = "−";
+        } else {
+            targetBody.style.display = "none";
+            if(iconEl) iconEl.innerText = "+";
+        }
     }
 
     function initializeDailyWidgets() {
@@ -658,6 +788,27 @@
         return activationDate < cutoffDate;
     }
 
+    function checkSavedSession() {
+        const sessionDataString = localStorage.getItem('mls_user_session');
+        if (sessionDataString) {
+            try {
+                const sessionObj = JSON.parse(sessionDataString);
+                const currentTime = new Date().getTime();
+                
+                if (currentTime - sessionObj.loginTimestamp < 604800000) {
+                    executeSessionDashboardActivation(sessionObj.userRecord);
+                    return;
+                } else {
+                    localStorage.removeItem('mls_user_session');
+                }
+            } catch(e) {
+                localStorage.removeItem('mls_user_session');
+            }
+        }
+        document.body.setAttribute('data-theme', 'emerald');
+        document.getElementById('theme-configuration-bar').style.display = 'none';
+    }
+
     async function login() {
         const user = document.getElementById('username').value.trim();
         const pass = document.getElementById('password').value.trim();
@@ -675,39 +826,62 @@
                 return;
             }
 
-            currentUserRecord = data;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('current-user').innerText = data.username.toUpperCase();
+            const sessionPayload = {
+                loginTimestamp: new Date().getTime(),
+                userRecord: data
+            };
+            localStorage.setItem('mls_user_session', JSON.stringify(sessionPayload));
             
-            if (data.is_original_admin === true) {
-                document.getElementById('admin-tab-btn').style.display = 'inline-block';
-            } else {
-                document.getElementById('admin-tab-btn').style.display = 'none';
-            }
-
-            document.getElementById('new-username').value = data.username;
-            document.getElementById('new-password').value = data.password;
-            
-            const formatToday = new Date();
-            selectedCalendarISO = `${formatToday.getFullYear()}-${String(formatToday.getMonth()+1).padStart(2,'0')}-${String(formatToday.getDate()).padStart(2,'0')}`;
-            document.getElementById('calendar-selected-date').value = selectedCalendarISO;
-
-            fetchData(); 
-            if(data.is_original_admin) {
-                fetchAdminUsers();
-                fetchSubscriptionLedger();
-            }
+            executeSessionDashboardActivation(data);
         } else {
             document.getElementById('login-error').innerText = "ACCESS DENIED: REJECTED CREDENTIALS.";
         }
     }
 
+    function executeSessionDashboardActivation(userDataRecord) {
+        currentUserRecord = userDataRecord;
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('theme-configuration-bar').style.display = 'flex';
+        document.getElementById('current-user').innerText = userDataRecord.username.toUpperCase();
+        
+        const savedThemePref = localStorage.getItem(`theme_pref_${userDataRecord.username}`);
+        if(savedThemePref) {
+            document.body.setAttribute('data-theme', savedThemePref);
+            document.getElementById('global-theme-switcher').value = savedThemePref;
+        } else {
+            document.body.setAttribute('data-theme', 'cyber');
+            document.getElementById('global-theme-switcher').value = 'cyber';
+        }
+
+        if (userDataRecord.is_original_admin === true) {
+            document.getElementById('admin-tab-btn').style.display = 'inline-block';
+        } else {
+            document.getElementById('admin-tab-btn').style.display = 'none';
+        }
+
+        document.getElementById('new-username').value = userDataRecord.username;
+        document.getElementById('new-password').value = userDataRecord.password;
+        
+        const formatToday = new Date();
+        selectedCalendarISO = `${formatToday.getFullYear()}-${String(formatToday.getMonth()+1).padStart(2,'0')}-${String(formatToday.getDate()).padStart(2,'0')}`;
+        document.getElementById('calendar-selected-date').value = selectedCalendarISO;
+
+        fetchData(); 
+        if(userDataRecord.is_original_admin) {
+            fetchAdminUsers();
+            fetchSubscriptionLedger();
+        }
+    }
+
     function logout() {
+        localStorage.removeItem('mls_user_session');
         currentUserRecord = null;
         document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('theme-configuration-bar').style.display = 'none';
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('settings-panel').style.display = 'none';
+        document.body.setAttribute('data-theme', 'emerald');
     }
 
     async function fetchSubscriptionLedger() {
@@ -815,6 +989,13 @@
             currentUserRecord.username = newU; 
             currentUserRecord.password = newP;
             document.getElementById('current-user').innerText = newU.toUpperCase();
+            
+            const currentSession = JSON.parse(localStorage.getItem('mls_user_session'));
+            if(currentSession) {
+                currentSession.userRecord.username = newU;
+                currentSession.userRecord.password = newP;
+                localStorage.setItem('mls_user_session', JSON.stringify(currentSession));
+            }
             fetchData();
         } else {
             msg.className = "error"; msg.innerText = "Error: Username might be taken.";
@@ -840,8 +1021,43 @@
         if (!error) {
             cloudItems = data;
             renderAll();
+            calculateAndRenderHeroAgenda();
             buildInteractiveCalendarGrid();
         }
+    }
+
+    /* Computes and Updates the Upcoming Agenda Hero Box Display Element */
+    function calculateAndRenderHeroAgenda() {
+        const displayBox = document.getElementById('hero-agenda-content');
+        if(!displayBox) return;
+
+        const todayObj = new Date();
+        todayObj.setHours(0,0,0,0);
+
+        // Filter valid calendar entries belonging to today or future dates
+        const futureAgendas = cloudItems.filter(item => {
+            if (item.category !== 'calendar' || !item.notes) return false;
+            const itemDate = new Date(item.notes + "T00:00:00");
+            return itemDate >= todayObj;
+        });
+
+        if(futureAgendas.length === 0) {
+            displayBox.innerHTML = `<span style="color: gray; font-style: italic;">No upcoming agendas scheduled.</span>`;
+            return;
+        }
+
+        // Sort descending/ascending chronological alignment to find the closest event
+        futureAgendas.sort((a, b) => new Date(a.notes + "T00:00:00") - new Date(b.notes + "T00:00:00"));
+        const nextAgenda = futureAgendas[0];
+
+        // Format dates cleanly
+        const dateParts = nextAgenda.notes.split('-');
+        const formattedDateString = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
+        displayBox.innerHTML = `
+            <span style="font-weight:700; color:var(--text-main);">${nextAgenda.title}</span> 
+            <span style="margin-left: 8px; font-size:0.85em; background:rgba(0,0,0,0.2); padding: 2px 6px; border-radius:4px; color:var(--text-sub);">🗓️ ${formattedDateString}</span>
+        `;
     }
 
     async function addItem(category) {
@@ -944,11 +1160,6 @@
 
         if(!u || !p) return;
         let timestamp = new Date().toISOString();
-        if(u.toLowerCase() === 'tester2') {
-            let backdate = new Date();
-            backdate.setDate(backdate.getDate() - 90); 
-            timestamp = backdate.toISOString();
-        }
 
         const { error } = await window.supabase.from('system_users').insert([{ username: u, password: p, activated_at: timestamp }]);
         if(!error) {
@@ -1057,12 +1268,15 @@
 
             cell.innerHTML = `<span class="day-number">${day}</span>`;
             
-            const hasEvents = cloudItems.some(item => item.category === 'calendar' && item.notes === currentCellISO);
-            if(hasEvents) {
-                const dot = document.createElement('div');
-                dot.className = "events-indicator";
-                cell.appendChild(dot);
-            }
+            // Querying DB items to render inline text preview nodes directly within dates
+            const dayAgendas = cloudItems.filter(item => item.category === 'calendar' && item.notes === currentCellISO);
+            dayAgendas.forEach(task => {
+                const previewSpan = document.createElement('span');
+                previewSpan.className = "cell-agenda-preview";
+                previewSpan.innerText = task.title;
+                previewSpan.title = task.title; 
+                cell.appendChild(previewSpan);
+            });
 
             cell.onclick = () => selectCalendarDate(currentCellISO);
             container.appendChild(cell);
@@ -1077,7 +1291,10 @@
         document.getElementById(tabId).classList.add('active');
         document.getElementById(`tab-btn-${tabId}`)?.classList.add('active');
         if(tabId === 'admin') document.getElementById('admin-tab-btn').classList.add('active');
-        if(tabId === 'calendar') buildInteractiveCalendarGrid();
+        if(tabId === 'calendar') {
+            calculateAndRenderHeroAgenda();
+            buildInteractiveCalendarGrid();
+        }
     }
 
     function toggleCard(id) {
@@ -1177,4 +1394,4 @@
     }
 </script>
 </body>
-</html> 
+</html>
