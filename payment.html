@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mrlinksaverman // Secure Workspace Activation</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* --- DYNAMIC THEME SYSTEM DESIGN LINKED FROM PARENT --- */
+        @keyframes dynamicColorWheel {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 100%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 0%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        :root {
+            --bg-color: #080e1a;
+            --surface-color: #111b30;
+            --text-main: #e2e8f0;
+            --text-sub: #38bdf8;
+            --brand-accent: #06b6d4;
+            --border-style: 1px solid #1e293b;
+            --shadow-sm: 0 0 15px rgba(6,182,212,0.15);
+            --card-bg: #192641;
+            --gradient-flow: linear-gradient(125deg, #2e154a, #0c2540, #0a3a30, #3d1222, #2e154a);
+        }
+
+        html, body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: var(--gradient-flow);
+            background-color: var(--bg-color);
+            background-size: 400% 400%;
+            animation: dynamicColorWheel 25s ease-in-out infinite;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            box-sizing: border-box;
+            padding: 12px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .pitch-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--brand-accent);
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+
+        .price-badge {
+            background: #10b981;
+            color: white;
+            font-weight: 800;
+            font-size: 1.4rem;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .pitch-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: left;
+            margin: 15px 0;
+        }
+
+        .pitch-text ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .pitch-text li {
+            margin-bottom: 8px;
+        }
+
+        .form-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .form-box h2 {
+            font-size: 1.15rem;
+            color: var(--brand-accent);
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input {
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95em;
+            box-sizing: border-box;
+            width: 100%;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--brand-accent);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25);
+        }
+
+        button {
+            background-color: #10b981;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+            transition: filter 0.2s, transform 0.1s;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+        }
+
+        .qr-section {
+            display: none;
+            margin-top: 25px;
+            text-align: center;
+            border-top: 1px dashed rgba(255,255,255,0.2);
+            padding-top: 25px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-placeholder {
+            width: 220px;
+            height: 220px;
+            background: #ffffff;
+            margin: 15px auto;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #000000;
+            font-weight: bold;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 6px solid #ffffff;
+        }
+
+        .qr-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .btn-back {
+            background-color: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: rgba(255,255,255,0.7);
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 0.85rem;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+        }
+
+        .notice-badge {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            line-height: 1.4;
+            text-align: left;
+        }
+
+        .error { color: #ef4444; font-size: 0.85rem; margin-top: -10px; margin-bottom: 15px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="pitch-card">
+        <h1>mrlinksaverman</h1>
+        <div style="font-size: 1.1rem; color: var(--text-sub); font-weight: 600;">Snappy, Private Cloud Node Architecture</div>
+        
+        <div class="price-badge">RM5 / 2 MONTHS</div>
+        
+        <div class="pitch-text">
+            <strong>Stop ruining your daily workflow.</strong> Group chats, messy notes apps, and bloated browser tabs waste precious focus when you are jumping between assignments, classes, and group project calls. 
+            <br><br>
+            For less than the price of a single iced Milo, you gain a fully isolated cloud vault designed with zero latency to keep you instantly locked into your academic schedules:
+            <ul>
+                <li>⚡ <strong>Zero Bloat, Maximum Speed:</strong> Built intentionally barebones to load up in milliseconds on low-power phones or laptops.</li>
+                <li>🔒 <strong>Postgres Row-Level Isolation:</strong> Enterprise digital vault protocols. Absolutely nobody can view your synchronized keys but you.</li>
+                <li>📅 <strong>Dynamic Grid Synchronization:</strong> Unified micro-agenda dashboard with customized team meeting links and task attachment spaces.</li>
+            </ul>
+        </div>
+
+        <div class="form-box">
+            <h2>Step 1: Choose Username Identity</h2>
+            <input type="text" id="reg-username" placeholder="ENTER YOUR PREFERRED USERNAME">
+            <p id="reg-error" class="error" style="display:none;"></p>
+            
+            <button onclick="generateActivationRequest()">SHOW DUITNOW ACCESS QR</button>
+        </div>
+
+        <div id="qr-display-area" class="qr-section">
+            <h2 style="color: #10b981;">Step 2: Scan QR & Send Receipt</h2>
+            <p style="font-size:0.9rem; color:rgba(255,255,255,0.85);">Scan the personal DuitNow node below to transfer the RM5 fee.</p>
+            
+            <div class="qr-placeholder">
+                <img src="qr_placeholder.png" alt="DuitNow QR Node Terminal">
+            </div>
+
+            <div class="notice-badge">
+                <strong>⚡ MANUAL ACTIVATION POLICY:</strong> Accounts are not auto-activated upon payment. You must send your transfer receipt to the admin terminal for validation. **Activation updates usually take around 1 to 2 hours to process.**
+            </div>
+
+            <button onclick="redirectToTelegram()" style="margin-top:20px; background: #0088cc; box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);">
+                💬 SEND RECEIPT TO TELEGRAM FOR MANUAL ACTIVATION
+            </button>
+        </div>
+
+        <button onclick="window.location.href='index.html'" class="btn-back">← RETURN TO CORE LOGIN TERMINAL</button>
+    </div>
+</div>
+
+<script>
+    // System database configurations mapped from primary layout state
+    (function() {
+        const URL = "https://rivjymdnsxgpdilqqpvu.supabase.co";
+        const KEY = "sb_publishable_kY3--vsG69shv2nt6bS3Xw_WhfPWcfN";
+        window.supabase = supabase.createClient(URL, KEY);
+    })();
+
+    function generateActivationRequest() {
+        const u = document.getElementById('reg-username').value.trim();
+        const err = document.getElementById('reg-error');
+
+        if(!u) {
+            err.innerText = "Error: Username entry cannot be left blank.";
+            err.style.display = "block";
+            return;
+        }
+        if(u.length < 3) {
+            err.innerText = "Error: Preferred username must be at least 3 characters.";
+            err.style.display = "block";
+            return;
+        }
+
+        err.style.display = "none";
+        document.getElementById('qr-display-area').style.display = 'block';
+        document.getElementById('qr-display-area').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function redirectToTelegram() {
+        const u = document.getElementById('reg-username').value.trim();
+        
+        // Structure the template message so they know their temp password will be 'password'
+        const messageText = encodeURIComponent(
+            `Hello! I have completed payment for mrlinksaverman.\n\n` +
+            `Preferred Username: ${u}\n\n` +
+            `Attached below is my payment receipt. Please activate my account setup with the temporary password 'password' so I can log in and change it myself.`
+        );
+        
+        // Safely opens user's DM to you with text parameters attached
+        window.open(`https://t.me/mrlinksaverman?text=${messageText}`, '_blank');
+    }
+</script>
+
+</body>
+</html>
