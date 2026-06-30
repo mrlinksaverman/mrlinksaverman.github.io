@@ -7,7 +7,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* --- DYNAMIC THEME SYSTEM DESIGN --- */
-        :root, [data-theme="cyber"] {
+        @keyframes dynamicColorWheel {
+            0% { background-position: 0% 50%; }
+            25% { background-position: 50% 100%; }
+            50% { background-position: 100% 50%; }
+            75% { background-position: 50% 0%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        :root, [data-theme="chroma"] {
             --bg-color: #080e1a;
             --surface-color: #111b30;
             --text-main: #e2e8f0;
@@ -16,6 +24,22 @@
             --border-style: 1px solid #1e293b;
             --shadow-sm: 0 0 15px rgba(6,182,212,0.15);
             --card-bg: #192641;
+            
+            /* Background gradient parameters for dynamic shuffling */
+            --gradient-flow: linear-gradient(125deg, #2e154a, #0c2540, #0a3a30, #3d1222, #2e154a);
+        }
+        [data-theme="cyber"] {
+            --bg-color: #060913;
+            --surface-color: #0f1626;
+            --text-main: #f1f5f9;
+            --text-sub: #f43f5e;
+            --brand-accent: #38bdf8;
+            --border-style: 1px solid #1e293b;
+            --shadow-sm: 0 0 15px rgba(56,189,248,0.15);
+            --card-bg: #1e2942;
+
+            /* Cyber Pop Shuffling Gradient */
+            --gradient-flow: linear-gradient(125deg, #0f172a, #1e1b4b, #311042, #111827, #0f172a);
         }
         [data-theme="velvet"] {
             --bg-color: #0b0714;
@@ -26,6 +50,9 @@
             --border-style: 1px solid #3b2e56;
             --shadow-sm: 0 4px 15px rgba(0,0,0,0.3);
             --card-bg: #221a35;
+
+            /* Deep Velvet Shuffling Gradient */
+            --gradient-flow: linear-gradient(125deg, #120626, #2a0845, #4a0e4e, #1a0b2e, #120626);
         }
         [data-theme="emerald"] {
             --bg-color: #091711;
@@ -36,9 +63,12 @@
             --border-style: 1px solid #163e2b;
             --shadow-sm: 0 4px 15px rgba(0,0,0,0.4);
             --card-bg: #162f23;
+
+            /* Emerald Moss Shuffling Gradient */
+            --gradient-flow: linear-gradient(125deg, #022c22, #064e3b, #0f5132, #042f1a, #022c22);
         }
         [data-theme="blush"] {
-            --bg-color: #ffb3c6;
+            --bg-color: #ffccd5;
             --surface-color: #ffe5ec;
             --text-main: #3a0007;
             --text-sub: #a11d33;
@@ -46,32 +76,27 @@
             --border-style: 1px solid #ff85a1;
             --shadow-sm: 0 4px 12px rgba(255, 77, 109, 0.15);
             --card-bg: #ffccd5;
+
+            /* Blush Quartz Shuffling Gradient */
+            --gradient-flow: linear-gradient(125deg, #ffe5ec, #ffb3c6, #ffa5ab, #f08080, #ffe5ec);
         }
 
-        /* Smooth video-like color wheel animation for the login screen background */
-        @keyframes loginColorWheel {
-            0% { background-position: 0% 50%; }
-            25% { background-position: 50% 100%; }
-            50% { background-position: 100% 50%; }
-            75% { background-position: 50% 0%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        body.login-active {
-            background: linear-gradient(125deg, #2e154a, #0c2540, #0a3a30, #3d1222, #2e154a);
-            background-size: 400% 400%;
-            animation: loginColorWheel 25s ease-in-out infinite;
-            color: #ffffff;
-        }
-
+        /* Continuous Dynamic Color Flow Activation Across All Theme Profiles */
         html, body {
             min-height: 100vh;
             margin: 0;
             padding: 0;
+            background: var(--gradient-flow);
             background-color: var(--bg-color);
+            background-size: 400% 400%;
+            animation: dynamicColorWheel 25s ease-in-out infinite;
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            transition: background-color 0.3s, color 0.3s;
+            transition: color 0.3s, background-color 0.3s, border-color 0.3s;
+        }
+
+        body.login-active {
+            color: #ffffff;
         }
 
         body {
@@ -672,9 +697,10 @@
     <div class="theme-panel-wrapper" id="theme-configuration-bar" style="display: none;">
         <span class="theme-label">VISUAL CONFIGURATION:</span>
         <select id="global-theme-switcher" onchange="applySelectedTheme()" style="padding: 6px 12px; margin: 0; font-size: 0.85em; width: auto;">
-            <option value="cyber">Cyber Pop (Vivid Default)</option>
+            <option value="chroma" selected>Dynamic Chroma Flow (Default)</option>
+            <option value="cyber">Cyber Pop (Vivid Neon)</option>
             <option value="velvet">Deep Velvet (Dark)</option>
-            <option value="emerald" selected>Emerald Moss (Dark Green Base)</option>
+            <option value="emerald">Emerald Moss (Dark Green Base)</option>
             <option value="blush">Blush Quartz (Bright Pink Base)</option>
         </select>
     </div>
@@ -972,7 +998,7 @@
     }
 
     function checkIsExpired(userRow) {
-        if (userRow.is_tester) return false; // Tester accounts never fire regular time expiration rules
+        if (userRow.is_tester) return false; 
         if (userRow.is_original_admin || userRow.is_lifetime_free) return false;
         if (!userRow.activated_at) return true;
 
@@ -1002,6 +1028,7 @@
         }
         
         document.body.classList.add('login-active');
+        document.body.setAttribute('data-theme', 'chroma');
         document.getElementById('main-interface-container').classList.add('login-mode');
         document.getElementById('theme-configuration-bar').style.display = 'none';
     }
@@ -1035,7 +1062,6 @@
         }
     }
 
-    // ADJUSTMENT 9.1: Instantly log in visitor to mock container session bypass
     function loginAsTester() {
         const testerRecord = {
             id: -999,
@@ -1046,7 +1072,6 @@
             is_lifetime_free: false
         };
         
-        // Initialize structural tracker layout fields without syncing persistent cloud rows
         const sessionPayload = {
             loginTimestamp: new Date().getTime(),
             userRecord: testerRecord
@@ -1071,8 +1096,8 @@
             document.body.setAttribute('data-theme', savedThemePref);
             document.getElementById('global-theme-switcher').value = savedThemePref;
         } else {
-            document.body.setAttribute('data-theme', 'cyber');
-            document.getElementById('global-theme-switcher').value = 'cyber';
+            document.body.setAttribute('data-theme', 'chroma');
+            document.getElementById('global-theme-switcher').value = 'chroma';
         }
 
         if (userDataRecord.is_original_admin === true) {
@@ -1103,7 +1128,7 @@
         
         document.body.classList.add('login-active');
         document.getElementById('main-interface-container').classList.add('login-mode');
-        document.body.removeAttribute('data-theme');
+        document.body.setAttribute('data-theme', 'chroma');
         
         document.getElementById('login-screen').style.display = 'flex';
         document.getElementById('settings-panel').style.display = 'none';
@@ -1197,7 +1222,6 @@
         panel.style.display = currentDisplay === 'none' ? 'flex' : 'none';
     }
 
-    // ADJUSTMENT 9.2: Kick off session instantly if tester tries updating root credentials
     async function updateAccountInfo() {
         if(currentUserRecord && currentUserRecord.is_tester) {
             logout("if you want to reset the TESTER account, you should get your own account.");
@@ -1248,14 +1272,11 @@
         container.appendChild(input);
     }
 
-    // ADJUSTMENT 9.3 & 9.4: Fetch handles tester dynamic mock layer filters and hour eviction parameters
     async function fetchData() {
         if(currentUserRecord && currentUserRecord.is_tester) {
-            // ADJUSTMENT 9.4: Evict items whose local storage age exceeds 1 hour (3600000 ms)
             const rightNow = new Date().getTime();
             testerVolatileItems = testerVolatileItems.filter(item => (rightNow - item.timestamp) < 3600000);
 
-            // Merge unalterable elements with current volatile cache nodes
             cloudItems = [
                 ...TESTER_MOCK_DATA.notes,
                 ...TESTER_MOCK_DATA.meetings,
@@ -1284,13 +1305,11 @@
         }
     }
 
-    // ADJUSTMENT 9.3: Structural loop generating agendas for current view, preceding month, and upcoming month
     function generateTesterMonthlyAgendas() {
         const generatedAgendas = [];
         const currentYear = calendarCurrentDate.getFullYear();
         const currentMonth = calendarCurrentDate.getMonth();
         
-        // Loop targeting previous, current, and next target view months
         for (let mOffset = -1; mOffset <= 1; mOffset++) {
             let targetDate = new Date(currentYear, currentMonth + mOffset, 1);
             let y = targetDate.getFullYear();
@@ -1383,7 +1402,6 @@
             document.getElementById('calendar-task-title').value = '';
         }
 
-        // ADJUSTMENT 9.4: Route new tester entries to volatile transient cache storage array rather than cloud
         if(isTesterSession) {
             payload.id = "volatile-" + Math.random().toString(36).substring(2, 9);
             payload.timestamp = new Date().getTime();
@@ -1397,7 +1415,6 @@
     }
 
     async function saveEdit(id, category) {
-        // ADJUSTMENT 9.3: Terminate editing attempt if targeting frozen mock elements
         if(String(id).startsWith("mock-")) {
             alert("Tester account constraints enabled: Core template entries cannot be modified.");
             fetchData();
@@ -1451,7 +1468,6 @@
     }
 
     async function deleteItem(id) {
-        // ADJUSTMENT 9.3: Intercept and drop deletion attempt if targeting mock structures
         if(String(id).startsWith("mock-")) {
             alert("Tester account constraints enabled: Core template entries cannot be deleted.");
             return;
