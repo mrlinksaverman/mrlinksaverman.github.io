@@ -214,6 +214,19 @@
             border-color: #ffffff !important;
         }
 
+        .btn-activate-account {
+            background-color: #10b981 !important;
+            color: #ffffff !important;
+            border: none !important;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            margin-top: 5px;
+        }
+
+        .btn-activate-account:hover {
+            filter: brightness(1.1) !important;
+        }
+
         /* FAQ Styling System */
         .faq-container {
             display: flex;
@@ -717,6 +730,8 @@
             <input type="password" id="password" placeholder="ENTER PASSWORD">
             <button onclick="login()">INITIALIZE CLOUD LOGIN</button>
             
+            <button onclick="window.location.href='payment.html'" class="btn-activate-account">💳 ACTIVATE NEW ACCOUNT</button>
+            
             <button onclick="loginAsTester()" class="btn-tester-bypass">🚀 TRY IT HERE!!!</button>
             
             <p id="login-error" class="error" style="margin:0;"></p>
@@ -929,7 +944,7 @@
         "Paradigmatic (Serving as a model)"
     ];
 
-    // ADJUSTMENT 9.3: Immutable static structure maps for the tester bypass ecosystem
+    // Immutable static structure maps for the tester bypass ecosystem
     const TESTER_MOCK_DATA = {
         notes: [
             { id: "mock-n-1", isMock: true, category: "notes", notes: "📚 Core Link Strategy: Avoid heavy documents like Google Docs on low bandwidth devices." },
@@ -960,7 +975,7 @@
     let calendarCurrentDate = new Date();
     let selectedCalendarISO = "";
 
-    // ADJUSTMENT 9.4: Volatile local storage array for tester additions that automatically clear out
+    // Volatile local storage array for tester additions that automatically clear out
     let testerVolatileItems = [];
 
     (function() {
