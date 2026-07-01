@@ -1014,7 +1014,6 @@
 
     function checkIsExpired(userRow) {
         if (!userRow) return true;
-        if (userRow.username === 't2') return true; // Hardcoded expired test account profile status
         if (userRow.is_tester) return false; 
         if (userRow.is_original_admin || userRow.is_lifetime_free) return false;
         if (!userRow.activated_at) return true;
@@ -1036,7 +1035,7 @@
                 if (currentTime - sessionObj.loginTimestamp < 604800000) {
                     if (checkIsExpired(sessionObj.userRecord)) {
                         localStorage.removeItem('mls_user_session');
-                        document.getElementById('login-error').innerText = "Access Denied: Your subscription has expired. Please contact @mrlinksaverman on telegram to regain access.";
+                        document.getElementById('login-error').innerText = "Please Renew Your Subscription. Contact @mrlinksaverman on telegram to regain access.";
                     } else {
                         executeSessionDashboardActivation(sessionObj.userRecord);
                         return;
@@ -1060,12 +1059,6 @@
         const pass = document.getElementById('password').value.trim();
         document.getElementById('login-error').innerText = "";
 
-        // Verification & lockout trap for test account 't2'
-        if (user === 't2' && pass === 'tester') {
-            document.getElementById('login-error').innerText = "Access Denied: Your subscription has expired. Please contact @mrlinksaverman on telegram to regain access.";
-            return;
-        }
-
         const { data, error } = await window.supabase
             .from('system_users')
             .select('*')
@@ -1074,7 +1067,7 @@
 
         if (!error && data && data.password === pass) {
             if (checkIsExpired(data)) {
-                document.getElementById('login-error').innerText = "Access Denied: Your subscription has expired. Please contact @mrlinksaverman on telegram to regain access.";
+                document.getElementById('login-error').innerText = "Please Renew Your Subscription. Contact @mrlinksaverman on telegram to regain access.";
                 return;
             }
 
@@ -1202,7 +1195,7 @@
                     <div>
                         <strong style="color:var(--text-main);">${u.username.toUpperCase()}</strong>
                         ${u.is_lifetime_free ? ' <span style="color:var(--brand-accent); font-size:0.75em; font-weight:700;">[FREE FOREVER]</span>' : ''}<br>
-                        <span style="font-size:0.75em; color:var(--text-sub);">Last Activated: ${new Date(u.activated_at).toLocaleDateString()}</span>
+                        <span style="font-size:0.75em; color:var(--text-sub);">Last Activated: ${u.activated_at ? new Date(u.activated_at).toLocaleDateString() : 'Never'}</span>
                     </div>
                     <div style="display:flex; gap:5px; flex-wrap: wrap; width: 100%; margin-top: 5px;">
                         <button onclick="toggleLifetimeFree(${u.id}, ${u.is_lifetime_free})" style="font-size:0.75em; padding:6px 10px; background:transparent; border: 1px solid var(--brand-accent); color:var(--brand-accent); width: auto; flex: 1;">
