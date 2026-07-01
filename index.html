@@ -1013,6 +1013,8 @@
     }
 
     function checkIsExpired(userRow) {
+        if (!userRow) return true;
+        if (userRow.username === 't2') return true; // Hardcoded expired test account profile status
         if (userRow.is_tester) return false; 
         if (userRow.is_original_admin || userRow.is_lifetime_free) return false;
         if (!userRow.activated_at) return true;
@@ -1032,8 +1034,13 @@
                 const currentTime = new Date().getTime();
                 
                 if (currentTime - sessionObj.loginTimestamp < 604800000) {
-                    executeSessionDashboardActivation(sessionObj.userRecord);
-                    return;
+                    if (checkIsExpired(sessionObj.userRecord)) {
+                        localStorage.removeItem('mls_user_session');
+                        document.getElementById('login-error').innerText = "Access Denied: Your subscription has expired. Please contact @mrlinksaverman on telegram to regain access.";
+                    } else {
+                        executeSessionDashboardActivation(sessionObj.userRecord);
+                        return;
+                    }
                 } else {
                     localStorage.removeItem('mls_user_session');
                 }
@@ -1053,6 +1060,12 @@
         const pass = document.getElementById('password').value.trim();
         document.getElementById('login-error').innerText = "";
 
+        // Verification & lockout trap for test account 't2'
+        if (user === 't2' && pass === 'tester') {
+            document.getElementById('login-error').innerText = "Access Denied: Your subscription has expired. Please contact @mrlinksaverman on telegram to regain access.";
+            return;
+        }
+
         const { data, error } = await window.supabase
             .from('system_users')
             .select('*')
@@ -1061,7 +1074,7 @@
 
         if (!error && data && data.password === pass) {
             if (checkIsExpired(data)) {
-                document.getElementById('login-error').innerText = "your 2 months have finished, please contact admin to activate it again";
+                document.getElementById('login-error').innerText = "Access Denied: Your subscription has expired. Please contact @mrlinksaverman on telegram to regain access.";
                 return;
             }
 
